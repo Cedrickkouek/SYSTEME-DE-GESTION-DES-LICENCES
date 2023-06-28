@@ -46,11 +46,11 @@ public class LicenceService {
 
     public List<Licence> rechercheUneLicenceParNom(String nom)
     {
-        return licenceRepository.find(nom);
+        return licenceRepository.findBynomService(nom);
     }
 
-    public List<Licence> rechercheParStatus(String status)
+    public List<Licence> rechercheParStatus(StatusLicence status)
     {
-        return licenceRepository.fin
+        return licenceRepository.findByStatus(status);
     }
 }
