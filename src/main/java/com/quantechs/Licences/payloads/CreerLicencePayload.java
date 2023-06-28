@@ -1,4 +1,4 @@
-package com.quantechs.Licences.dto;
+package com.quantechs.Licences.payloads;
 
 import java.time.LocalDate;
 
@@ -10,17 +10,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LicenceRequest {
-    private String idLicence;
-    private String nomLicence;
+public class CreerLicencePayload {
+    private String nomService;
     private LocalDate dateAchat;
     private String idUtilisateur;
     private String nomUtilisateur;
-    private String status;
     private float prix;
     private String idPaiement;
     private LocalDate dateExpiration;
-    private Boolean validite;
     private String cleLicence;
     
 }
