@@ -2,9 +2,11 @@ package com.quantechs.Licences.payloads;
 
 import java.time.LocalDate;
 
-import org.hibernate.validator.constraints.URL;
+//import org.hibernate.validator.constraints.URL;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
+
+//import com.quantechs.Licences.enumeration.StatusProjet;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,31 +14,31 @@ import lombok.Data;
 
 @Data
 public class CreerProjetPayload {
-    @NotBlank(message = "Le nom de projet est requis")
+    //@NotBlank(message = "Le nom de projet est requis")
     @NotNull
     private String nomProjet;
-    @NotBlank(message = "La description du projet est requise")
-    @NotNull
+    @NotBlank
+    @NotNull(message = "La description du projet est requise")
     private String description;
-    @NotBlank(message = "Veuillez spécifier le satut du projet")
-    @NotNull
-    private String statusProjet;
-    @NotBlank(message = "Veuillez spécifier le nombre de services du projet")
-    @NotNull
+    //@NotBlank(message = "Veuillez spécifier le satut du projet")
+    //@NotNull(message = "Veuillez spécifier le satut du projet")
+    //private StatusProjet statusProjet;
+    //@NotBlank
+    @NotNull(message = "Veuillez spécifier le nombre de services du projet")
     @NumberFormat
     private int nombreService;
-    @NotBlank(message = "Veuillez spécifier le nom du directeur du projet")
+    @NotBlank
     @NotNull
     private String nomDirecteurProjet;
-    @NotBlank(message = "la date de création du projet est requise")
-    @NotNull
+    //@NotBlank
+    @NotNull(message = "La date de création du projet est requise")
     @DateTimeFormat
     private LocalDate dateCreation;
-    @NotBlank(message = "le lien du logo est requis")
+    //@NotBlank
+    //@NotNull(message = "Le lien du logo est requis")
+    //@URL
+    //private String urlLOgo;
+    //@NotBlank(message = "Clé de projet manquante")
     @NotNull
-    @URL
-    private String UrlLOgo;
-    @NotBlank(message = "clé de projet manquante")
-    @NotNull
-    private String cléProjet; 
+    private String cleProjet; 
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quantechs.Licences.entities.Licence;
@@ -24,30 +24,30 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-//@RequestMapping(value = "/licence")
+@RequestMapping(value = "/licence")
 public class LicenceController {
     private final LicenceService licenceService;
     //private final StatusLicence status;
 
-    @PostMapping(value = "/licence/creerlicence")
+    @PostMapping(value = "/creerlicence")
     public ResponseEntity<Licence> creerLicence( @Valid @RequestBody CreerLicencePayload CreerLicencePayload){
         var res = licenceService.creerLicence(CreerLicencePayload);
         return new ResponseEntity<Licence>(res,HttpStatus.OK);
     }
     
-    @GetMapping(value = "/licence/listerlicences")
+    @GetMapping(value = "/listerlicences")
     public ResponseEntity<List<Licence>> listerToutesLicences()
     {
         return ResponseEntity.ok(licenceService.listerToutesLicences());
     }
 
-    @GetMapping(value = "/licence/{idLicence}")
+    @GetMapping(value = "/{idLicence}")
     public ResponseEntity<Licence> rechercherUneLicenceParId(@PathVariable String idLicence) throws LicenceNonTrouverException
     {
         return ResponseEntity.ok(licenceService.rechercheUneLicenceParId(idLicence));    
     }
 
-    @DeleteMapping(value = "/licence/{idLicence}")
+    @DeleteMapping(value = "/{idLicence}")
     public String supprimerUneLicenceParId(@PathVariable String idLicence)
     {
         licenceService.supprimerLicenceParId(idLicence);
@@ -56,7 +56,7 @@ public class LicenceController {
     }
 
     /*@GetMapping(value = "/{nomService}")
-    public ResponseEntity<List<Licence>> rechercherParNomLicence(@RequestBody @PathVariable String nomService)
+    public ResponseEntity<List<Licence>> rechercherParNomLicence(@PathVariable String nomService)
     {
         return ResponseEntity.ok(licenceService.rechercheUneLicenceParNom(nomService));
     }*/

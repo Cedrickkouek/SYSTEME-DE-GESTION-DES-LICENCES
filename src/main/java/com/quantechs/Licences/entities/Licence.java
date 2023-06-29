@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Document
-
 public class Licence {
     @Id
     private String idLicence;
