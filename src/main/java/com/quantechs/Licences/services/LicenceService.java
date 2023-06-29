@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.quantechs.Licences.entities.Licence;
-import com.quantechs.Licences.enumeration.StatusLicence;
+//import com.quantechs.Licences.enumeration.StatusLicence;
+import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerLicencePayload;
 import com.quantechs.Licences.repositories.LicenceRepository;
 
@@ -39,18 +40,30 @@ public class LicenceService {
         return licenceRepository.findAll();
     }
 
-    public Licence rechercheUneLicenceParId(String id)
+    public Licence rechercheUneLicenceParId(String id) throws LicenceNonTrouverException
     {
-        return licenceRepository.findByidLicence(id);
-    }
+        Licence licence = licenceRepository.findByidLicence(id);
 
-    public List<Licence> rechercheUneLicenceParNom(String nom)
+        if(licence!=null)
+        {
+            return licence;
+        }
+        else{
+            throw new LicenceNonTrouverException("La licence avec pour ID: "+id+" n'a pas été trouvé!");
+        }
+    } 
+
+    public void supprimerLicenceParId(String id)
+    {
+         licenceRepository.deleteById(id);
+    }
+    /*public List<Licence> rechercheUneLicenceParNom(String nom)
     {
         return licenceRepository.findBynomService(nom);
-    }
+    }*/
 
-    public List<Licence> rechercheParStatus(StatusLicence status)
+    /*public List<Licence> rechercheParStatus(StatusLicence status)
     {
         return licenceRepository.findByStatus(status);
-    }
+    }*/
 }
