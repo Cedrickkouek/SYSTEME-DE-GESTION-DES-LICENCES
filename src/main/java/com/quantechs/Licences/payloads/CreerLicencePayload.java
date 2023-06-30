@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
+//import com.quantechs.Licences.enumeration.StatusLicence;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -32,7 +34,7 @@ public class CreerLicencePayload {
     private String nomUtilisateur;
     //@NotBlank(message = "Le statut de la licence est requis")
     //@NotNull
-    //private String status;
+    //private StatusLicence status;
     //@NotBlank(message = "Le nom de projet est requis")
     @NotNull(message = "Le Prix est requis")
     @NumberFormat

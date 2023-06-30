@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
+import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
@@ -39,6 +40,15 @@ public class ApplicationExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ProjetNonTrouverException.class)
     public Map<String, String> gererExceptionsDesProjets(ProjetNonTrouverException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Message D'erreur", excep.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ServiceNonTrouverException.class)
+    public Map<String, String> gererExceptionsDesProjets(ServiceNonTrouverException excep)
     {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("Message D'erreur", excep.getMessage());

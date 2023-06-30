@@ -15,16 +15,16 @@ public class CreerServicePayload {
     @NotBlank(message = "La description est requise")
     @NotNull
     private String description;
-    @NotBlank(message = "la validation du service est requise")
-    @NotNull
-    private String validation;
-    @NotBlank(message = "Le prix du service est requis")
-    @NotNull
+    //@NotBlank(message = "la validation du service est requise")
+    //@NotNull
+    //private String validation;
+    //@NotBlank
+    @NotNull(message = "Le prix du service est requis")
     @NumberFormat
     private float prix;
-    @NotBlank(message = "Veuillez spécifier le satut du service")
-    @NotNull
-    private String statusService;
+    //@NotBlank(message = "Veuillez spécifier le satut du service")
+    //@NotNull
+    //private String statusService;
     @NotBlank(message = "L'url du logo est requis est requis")
     @NotNull
     @URL
@@ -32,8 +32,8 @@ public class CreerServicePayload {
     @NotBlank(message = "responsable requis")
     @NotNull
     private String responsable;
-    @NotBlank(message = "Le nombre de licence est requis")
-    @NotNull
+    //@NotBlank
+    @NotNull(message = "Le nombre de licence est requis")
     @NumberFormat
     private int nombreLicence;
     @NotBlank(message = "clé de service requise")

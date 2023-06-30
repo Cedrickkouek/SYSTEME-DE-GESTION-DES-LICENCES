@@ -66,4 +66,8 @@ public class LicenceService {
     {
         return licenceRepository.findByStatus(status);
     }*/
+
+    /*public Object activerLicence() {
+        return null;
+    }*/
 }

@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.enumeration.StatusLicence;
+//import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerLicencePayload;
 import com.quantechs.Licences.services.LicenceService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+//import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @AllArgsConstructor
@@ -55,15 +58,21 @@ public class LicenceController {
         return msg;
     }
 
-    /*@GetMapping(value = "/{nomService}")
-    public ResponseEntity<List<Licence>> rechercherParNomLicence(@PathVariable String nomService)
+    /*public ResponseEntity<List<Licence>> rechercherParNomLicence(@PathVariable String nomService)
     {
         return ResponseEntity.ok(licenceService.rechercheUneLicenceParNom(nomService));
-    }*/
+    }
 
-   /*  @GetMapping(value = "/{status}")
+   @GetMapping(value = "/{status}")
     public ResponseEntity<List<Licence>> rechercherParStatus(@PathVariable StatusLicence status)
     {
         return ResponseEntity.ok(licenceService.rechercheParStatus(status));
-    } */
+    }*/
+
+    //@PutMapping(value="/activerlicence")
+    /*public ResponseEntity<Licence> activerLicence(String id, @RequestBody CreerLicencePayload CreerLicencePayload) {
+        //TODO: process PUT request
+        
+        return 
+    }*/
 }

@@ -22,9 +22,9 @@ import lombok.NoArgsConstructor;
 
 
 
-public class Service {
+public class LeService {
     @Id
-    private String id;
+    private String idService;
     private String nomService;
     private String description;
     private String validation;
