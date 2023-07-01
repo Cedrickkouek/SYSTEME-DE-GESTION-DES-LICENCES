@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.quantechs.Licences.entities.Licence;
+//import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
+//import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerLicencePayload;
@@ -31,8 +33,8 @@ public class LicenceService {
         .cleLicence(creerLicencePayload.getCleLicence()).build();
         
         licenceRepository.save(licence);
-
-        return licence;
+        
+            return licence;
     }
 
     public List<Licence> listerToutesLicences() //Permet de retouner une Liste de toutes les licences

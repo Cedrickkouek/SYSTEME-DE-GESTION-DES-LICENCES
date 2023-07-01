@@ -42,11 +42,11 @@ public class ClassService {
 
     public LeService rechercheUnServiceParId(String idService) throws ServiceNonTrouverException
     {
-        LeService licence = serviceRepository.findByidService(idService);
+        LeService service = serviceRepository.findByidService(idService);
 
-        if(licence!=null)
+        if(service!=null)
         {
-            return licence;
+            return service;
         }
         else{
             throw new ServiceNonTrouverException("Le Service avec pour ID: "+idService+" n'a pas été trouvé!");

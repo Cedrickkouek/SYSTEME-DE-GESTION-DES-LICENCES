@@ -29,7 +29,7 @@ public class Licence {
     private String idUtilisateur;
     private String nomUtilisateur;
     private StatusLicence status;
-    private float prix;
+    private double prix;
     private String idPaiement;
     private LocalDate dateExpiration;
     private Boolean validite;

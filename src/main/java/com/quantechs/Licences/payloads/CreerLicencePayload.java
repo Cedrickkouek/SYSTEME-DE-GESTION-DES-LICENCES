@@ -38,7 +38,7 @@ public class CreerLicencePayload {
     //@NotBlank(message = "Le nom de projet est requis")
     @NotNull(message = "Le Prix est requis")
     @NumberFormat
-    private float prix;
+    private double prix;
     @NotBlank(message = "L'ID du paiement est requis")
     @NotNull(message = "L'ID du paiment ne doit pas etre null")
     @Id

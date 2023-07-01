@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -52,6 +54,24 @@ public class ApplicationExceptionHandler {
     {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("Message D'erreur", excep.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public Map<String, String> valeurNonConforme(HttpMessageNotReadableException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("\u274C Format d'entrée non valid, verifier les champs et reessayer! \u274C ", excep.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public Map<String, String> typeNonAccepter(HttpMediaTypeNotAcceptableException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("\u274C Format d'entrée non valid, verifier les champs et reessayer! \u274C ", excep.getLocalizedMessage());
         return errorMap;
     }
 }

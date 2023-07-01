@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+//import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 //import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.enumeration.StatusLicence;
+//import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerLicencePayload;
 import com.quantechs.Licences.services.LicenceService;
@@ -71,7 +73,7 @@ public class LicenceController {
 
     //@PutMapping(value="/activerlicence")
     /*public ResponseEntity<Licence> activerLicence(String id, @RequestBody CreerLicencePayload CreerLicencePayload) {
-        //TODO: process PUT request
+        //
         
         return 
     }*/
