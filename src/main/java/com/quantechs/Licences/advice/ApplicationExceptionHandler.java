@@ -3,6 +3,7 @@ package com.quantechs.Licences.advice;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -72,6 +73,15 @@ public class ApplicationExceptionHandler {
     {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("\u274C Format d'entrée non valid, verifier les champs et reessayer! \u274C ", excep.getLocalizedMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+    @ExceptionHandler(ConversionFailedException.class)
+    public Map<String, String> conversionImpossible(ConversionFailedException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("\u274C Conversion des champs vers d'autres type impossible, verifier les champs et reessayer! \u274C ", excep.getLocalizedMessage());
         return errorMap;
     }
 }

@@ -1,10 +1,16 @@
 package com.quantechs.Licences.payloads;
 
 import java.time.LocalDate;
+//import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
+
+//import com.quantechs.Licences.entities.Licence;
+
+//import jakarta.persistence.GeneratedValue;
+//import jakarta.persistence.GenerationType;
 
 //import com.quantechs.Licences.enumeration.StatusLicence;
 
@@ -50,7 +56,7 @@ public class CreerLicencePayload {
     //@NotBlank(message = "Validité requise")
     //@NotNull
     //private Boolean validite;
-    @NotBlank(message = "clé licence requise")
-    @NotNull(message = "La clé de la licence ne doit pas etre null")
-    private String cleLicence;
+    //@NotBlank(message = "clé licence requise")
+    //@NotNull(message = "La clé de la licence ne doit pas etre null")
+    //@GeneratedValue(strategy = GenerationType.UUID)
 }

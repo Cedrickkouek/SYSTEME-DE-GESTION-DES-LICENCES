@@ -1,11 +1,19 @@
 package com.quantechs.Licences.entities;
 
 import java.time.LocalDate;
+//import java.util.UUID;
+//import java.util.UUID;
+import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.quantechs.Licences.enumeration.StatusLicence;
+
+import jakarta.persistence.Entity;
+//import jakarta.annotation.Generated;
+//import jakarta.persistence.GeneratedValue;
+//import jakarta.persistence.GenerationType;
 
 //import enumeration.StatusLicence;
 //import enumeration.validation;
@@ -21,6 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Document
+@Entity
 public class Licence {
     @Id
     private String idLicence;
@@ -33,7 +42,7 @@ public class Licence {
     private String idPaiement;
     private LocalDate dateExpiration;
     private Boolean validite;
-    private String cleLicence;
-    
+    //@GeneratedValue(strategy = GenerationType.UUID)
+    private UUID cleLicence;
     
 }

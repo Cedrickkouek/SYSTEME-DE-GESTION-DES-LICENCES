@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import  org.springframework.stereotype.Service;
 
+import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
@@ -33,6 +34,19 @@ public class ProjetService {
         return projet;
     }
 
+    public Projet modifierProjet(String idProjet, CreerProjetPayload creerProjetPayload) /*throws LicenceNonTrouverException*/
+    {
+        Projet projet = projetRepository.findByidProjet(idProjet);
+        projet.setNomProjet(creerProjetPayload.getNomProjet());
+        projet.setDescription(creerProjetPayload.getDescription());
+        projet.setNombreService(creerProjetPayload.getNombreService());
+        projet.setNomDirecteurProjet(creerProjetPayload.getNomDirecteurProjet());
+        projet.setDateCreation(creerProjetPayload.getDateCreation());
+
+        projetRepository.save(projet);
+
+        return projet;
+    }
     public List<Projet> listerTousProjets(){
         return projetRepository.findAll();
     }

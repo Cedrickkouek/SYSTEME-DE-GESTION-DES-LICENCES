@@ -3,6 +3,7 @@ package com.quantechs.Licences.entities;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import jakarta.persistence.Entity;
 
 //import enumeration.StatusService;
 //import enumeration.validation;
@@ -19,9 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Document
-
-
-
+@Entity
 public class LeService {
     @Id
     private String idService;
