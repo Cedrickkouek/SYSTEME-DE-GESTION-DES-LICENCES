@@ -3,6 +3,8 @@ package com.quantechs.Licences.entities;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.quantechs.Licences.enumeration.StatusService;
+
 import jakarta.persistence.Entity;
 
 //import enumeration.StatusService;
@@ -28,7 +30,7 @@ public class LeService {
     private String description;
     private String validation;
     private float prix;
-    private String statusService;
+    private StatusService statusService;
     private String URLLogo;
     private String responsable;
     private int nombreLicence;

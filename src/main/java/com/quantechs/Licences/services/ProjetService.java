@@ -1,13 +1,16 @@
 package com.quantechs.Licences.services;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import  org.springframework.stereotype.Service;
 
-import com.quantechs.Licences.entities.Licence;
+import com.fasterxml.uuid.Generators;
+//import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.entities.Projet;
+import com.quantechs.Licences.enumeration.StatusProjet;
 //import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.payloads.CreerLicencePayload;
@@ -26,16 +29,20 @@ public class ProjetService {
         .description(creerProjetPayload.getDescription())
         .nombreService(creerProjetPayload.getNombreService())
         .nomDirecteurProjet(creerProjetPayload.getNomDirecteurProjet())
-        .dateCreation(creerProjetPayload.getDateCreation())
-        .cleProjet(creerProjetPayload.getCleProjet()).build();
+        .dateCreation(creerProjetPayload.getDateCreation()).build();
         
+        projet.setStatusProjet(StatusProjet.ENCOURS);
+
+        UUID uuid = Generators.timeBasedGenerator().generate();
+        projet.setCleProjet(uuid);
+
         projetRepository.save(projet);
 
         return projet;
     }
 
-    public Projet modifierProjet(String idProjet, CreerProjetPayload creerProjetPayload) /*throws LicenceNonTrouverException*/
-    {
+    //public Projet modifierProjet(String idProjet, CreerProjetPayload creerProjetPayload) /*throws LicenceNonTrouverException*/
+    /*{
         Projet projet = projetRepository.findByidProjet(idProjet);
         projet.setNomProjet(creerProjetPayload.getNomProjet());
         projet.setDescription(creerProjetPayload.getDescription());
@@ -46,7 +53,18 @@ public class ProjetService {
         projetRepository.save(projet);
 
         return projet;
+    }*/
+    public Projet changerEtatProjet(String idProjet, StatusProjet statusProjet)
+    {
+        Projet projet = projetRepository.findByidProjet(idProjet);
+
+        projet.setStatusProjet(statusProjet);
+
+        projetRepository.save(projet);
+
+       return projet;
     }
+
     public List<Projet> listerTousProjets(){
         return projetRepository.findAll();
     }
@@ -67,6 +85,10 @@ public class ProjetService {
     public void supprimerProjetParId(String id)
     {
          projetRepository.deleteById(id);
+    }
+
+    public void supprimerToutProjet() {
+        projetRepository.deleteAll();
     }
 
     /*public List<Projet> rechercherProjetParNom(String nom){

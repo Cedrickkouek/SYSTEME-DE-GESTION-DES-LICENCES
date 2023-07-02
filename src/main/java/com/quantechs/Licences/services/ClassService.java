@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.quantechs.Licences.entities.LeService;
+import com.quantechs.Licences.enumeration.StatusService;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerServicePayload;
 import com.quantechs.Licences.repositories.ServiceRepository;
@@ -30,6 +31,7 @@ public class ClassService {
         .cleService(creerServicePayload.getCleService())
         .IdProjet(creerServicePayload.getIdProjet()).build();
 
+        service.setStatusService(StatusService.DISPONIBLE);
         serviceRepository.save(service);
 
         return service;
@@ -57,6 +59,23 @@ public class ClassService {
         
          serviceRepository.deleteById(idService);
     
+    }
+
+    public LeService modifierService(String idService, CreerServicePayload creerServicePayload) /*throws LicenceNonTrouverException*/
+    {
+        LeService service = serviceRepository.findByidService(idService);
+        service.setNomService(creerServicePayload.getNomService());
+        service.setDescription(creerServicePayload.getDescription());
+        service.setPrix(creerServicePayload.getPrix());
+        service.setURLLogo(creerServicePayload.getURLLogo());
+        service.setResponsable(creerServicePayload.getResponsable());
+        service.setNombreLicence(creerServicePayload.getNombreLicence());
+        service.setCleService(creerServicePayload.getCleService());
+        service.setIdProjet(creerServicePayload.getIdProjet());
+
+        serviceRepository.save(service);
+
+        return service;
     }
 
     /*public List<LeService> rechercheUnServiceParNom(String nom)

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quantechs.Licences.entities.Projet;
+import com.quantechs.Licences.enumeration.StatusProjet;
 //import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.enumeration.StatusProjet;
@@ -36,16 +37,29 @@ public class ProjetController {
         return new ResponseEntity<Projet>(yes,HttpStatus.OK);
     }
 
-    @PutMapping(value = "modifier/{idProjet}")
-    public ResponseEntity<Projet> modifierProjet(@Valid @PathVariable("idProjet") String idProjet, CreerProjetPayload creerProjetPayload){
+    /*@PutMapping(value = "modifier/{idProjet}")
+    public ResponseEntity<Projet> modifierProjet(@Valid @PathVariable("idProjet") String idProjet, @RequestBody CreerProjetPayload creerProjetPayload){
         Projet projet = projetService.modifierProjet(idProjet, creerProjetPayload);
         return new ResponseEntity<Projet>(projet, HttpStatus.OK);
-    }
+    }*/
 
     @GetMapping(value = "/projet/listerprojets")
     public ResponseEntity<List<Projet>> listerProjets()
     {
         return ResponseEntity.ok(projetService.listerTousProjets());
+    }
+
+    @PutMapping(value = "changerStatutProjet/{idProjet}")
+    public ResponseEntity<Projet> changerStatus(@PathVariable String idProjet, StatusProjet statusProjet) throws ProjetNonTrouverException
+    {
+
+        var res = projetService.changerEtatProjet(idProjet, statusProjet);
+
+        //var pro = projetService.rechercherUnProjetParId(idProjet);
+
+         //pro.setStatusProjet(statusProjet);
+
+         return new ResponseEntity<Projet>(res, HttpStatus.ACCEPTED);
     }
 
     @GetMapping(value = "/rechercher/{idProjet}")
@@ -60,6 +74,12 @@ public class ProjetController {
         projetService.supprimerProjetParId(idProjet);
         String msg = "Le Projet avec pour ID: "+idProjet+" a été supprimée avec succès \u2705";
         return msg;
+    }
+
+    @DeleteMapping(value = "/supprimerLesProjets")
+    public void superToutProjet()
+    {
+        projetService.supprimerToutProjet();
     }
 
     

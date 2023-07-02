@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
+import com.quantechs.Licences.enumeration.StatusProjet;
+
 //import com.quantechs.Licences.enumeration.StatusProjet;
 
 import jakarta.validation.constraints.NotBlank;
@@ -21,8 +23,8 @@ public class CreerProjetPayload {
     @NotNull(message = "La description du projet est requise")
     private String description;
     //@NotBlank(message = "Veuillez spécifier le satut du projet")
-    //@NotNull(message = "Veuillez spécifier le satut du projet")
-    //private StatusProjet statusProjet;
+    @NotNull(message = "Veuillez spécifier le satut du projet")
+    private StatusProjet statusProjet;
     //@NotBlank
     @NotNull(message = "Veuillez spécifier le nombre de services du projet")
     @NumberFormat
@@ -39,6 +41,6 @@ public class CreerProjetPayload {
     //@URL
     //private String urlLOgo;
     //@NotBlank(message = "Clé de projet manquante")
-    @NotNull
-    private String cleProjet; 
+    //@NotNull
+    //private String cleProjet; 
 }

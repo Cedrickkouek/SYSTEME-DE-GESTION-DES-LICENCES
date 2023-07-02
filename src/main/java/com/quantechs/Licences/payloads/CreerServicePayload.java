@@ -3,6 +3,8 @@ package com.quantechs.Licences.payloads;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.format.annotation.NumberFormat;
 
+import com.quantechs.Licences.enumeration.StatusService;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -24,7 +26,7 @@ public class CreerServicePayload {
     private float prix;
     //@NotBlank(message = "Veuillez spécifier le satut du service")
     //@NotNull
-    //private String statusService;
+    private StatusService statusService;
     @NotBlank(message = "L'url du logo est requis est requis")
     @NotNull
     @URL

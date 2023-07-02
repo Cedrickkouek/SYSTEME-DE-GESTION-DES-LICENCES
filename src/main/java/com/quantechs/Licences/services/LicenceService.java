@@ -40,6 +40,8 @@ public class LicenceService {
         .dateExpiration(creerLicencePayload.getDateExpiration()).build();
         //.cleLicence(creerLicencePayload.getCleLicence()).build();
 
+        licence.setStatus(StatusLicence.ACTIF);
+
         UUID uuid = Generators.timeBasedGenerator().generate();
         licence.setCleLicence(uuid);
 
@@ -60,10 +62,12 @@ public class LicenceService {
 
     public Licence rechercheUneLicenceParId(String id) throws LicenceNonTrouverException
     {
-        Licence licence = licenceRepository.findByidLicence(id);
+        boolean verification = licenceRepository.existsById(id);
+        
 
-        if(licence!=null)
+        if(verification)
         {
+            Licence licence = licenceRepository.findByidLicence(id);
             return licence;
         }
         else{

@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
+import com.quantechs.Licences.enumeration.StatusLicence;
+
 //import com.quantechs.Licences.entities.Licence;
 
 //import jakarta.persistence.GeneratedValue;
@@ -39,8 +41,8 @@ public class CreerLicencePayload {
     @NotNull(message = "Le nom ne doit pas etre null")
     private String nomUtilisateur;
     //@NotBlank(message = "Le statut de la licence est requis")
-    //@NotNull
-    //private StatusLicence status;
+    @NotNull
+    private StatusLicence status;
     //@NotBlank(message = "Le nom de projet est requis")
     @NotNull(message = "Le Prix est requis")
     @NumberFormat
