@@ -18,10 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quantechs.Licences.entities.Licence;
+//import com.quantechs.Licences.entities.Projet;
+import com.quantechs.Licences.enumeration.StatusLicence;
+//import com.quantechs.Licences.enumeration.StatusProjet;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
+//import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.payloads.CreerLicencePayload;
 import com.quantechs.Licences.services.LicenceService;
 
@@ -43,19 +47,19 @@ public class LicenceController {
         return new ResponseEntity<Licence>(res,HttpStatus.OK);
     }
 
-    @PutMapping(value="/activerlicence/{idLicence}")
+    /*@PutMapping(value="/activerlicence/{idLicence}")
     public ResponseEntity<Licence> activerLicence(@PathVariable String idLicence) throws LicenceNonTrouverException{
         var res = licenceService.activerLicence(idLicence); 
 
         return new ResponseEntity<Licence>(res, HttpStatus.ACCEPTED);
-    }
+    }*/
 
-    @PutMapping(value="/desactiverlicence/{idLicence}")
+    /*@PutMapping(value="/desactiverlicence/{idLicence}")
     public ResponseEntity<Licence> deactiverLicence(@PathVariable String idLicence) throws LicenceNonTrouverException{
         var res = licenceService.desactiverLicence(idLicence); 
 
         return new ResponseEntity<Licence>(res, HttpStatus.ACCEPTED);
-    }
+    }*/
     
     @GetMapping(value = "/listerlicences")
     public ResponseEntity<List<Licence>> listerToutesLicences()
@@ -63,11 +67,11 @@ public class LicenceController {
         return ResponseEntity.ok(licenceService.listerToutesLicences());
     }
 
-    @DeleteMapping(value = "/supprimerLeslicences")
+    /*@DeleteMapping(value = "/supprimerLeslicences")
     public void superToutesLicences()
     {
         licenceService.supprimerToutesLicences();
-    }
+    }*/
 
     @GetMapping(value = "/rechercher/{idLicence}")
     public ResponseEntity<Licence> rechercherUneLicenceParId(@PathVariable String idLicence) throws LicenceNonTrouverException
@@ -90,7 +94,17 @@ public class LicenceController {
     }
 
 
+    @PutMapping(value = "changerStatusLicence/{idLicence}")
+    public ResponseEntity<Licence> changerStatus(@PathVariable String idLicence, StatusLicence statusLicence) throws LicenceNonTrouverException
+    {
 
+        var res = licenceService.changerEtatLicence(idLicence, statusLicence); 
+        //var pro = projetService.rechercherUnProjetParId(idProjet);
+
+         //pro.setStatusProjet(statusProjet);
+
+         return new ResponseEntity<Licence>(res, HttpStatus.ACCEPTED);
+    }
 
     /*public ResponseEntity<List<Licence>> rechercherParNomLicence(@PathVariable String nomService)
     {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.Licence;
+//import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 //import com.quantechs.Licences.enumeration.StatusLicence;
@@ -16,6 +17,7 @@ import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerLicencePayload;
 import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.enumeration.StatusLicence;
+//import com.quantechs.Licences.enumeration.StatusProjet;
 
 //import jakarta.annotation.Generated;
 //import jakarta.persistence.GeneratedValue;
@@ -110,6 +112,17 @@ public class LicenceService {
         {
             throw new LicenceNonTrouverException("La licence avec pour ID: "+idLicence+" n'a pas été trouvé!");
         }*/  
+    }
+
+    public Licence changerEtatLicence(String idLicence, StatusLicence statusLicence)
+    {
+        Licence licence = licenceRepository.findByidLicence(idLicence);
+
+        licence.setStatus(statusLicence);
+
+        licenceRepository.save(licence);
+
+       return licence;
     }
 
     public Licence desactiverLicence(String idLicence) /*throws LicenceNonTrouverException*/

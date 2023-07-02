@@ -4,6 +4,9 @@ import com.quantechs.Licences.entities.Licence;
 
 import java.util.UUID;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 //import java.util.List;
 //import java.util.List;
@@ -13,6 +16,8 @@ public interface LicenceRepository extends MongoRepository<Licence, String>{
     Licence findByidLicence(String idLicence);
 
     Licence findBycleLicence(UUID cleLicence);
+
+    Page<Licence> findBynomService(Pageable pageable);
 
     /*List<Licence> findBynomService(String nomService);
 

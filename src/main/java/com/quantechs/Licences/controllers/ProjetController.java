@@ -18,6 +18,7 @@ import com.quantechs.Licences.enumeration.StatusProjet;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.enumeration.StatusProjet;
 import com.quantechs.Licences.payloads.CreerProjetPayload;
+import com.quantechs.Licences.repositories.ProjetRepository;
 import com.quantechs.Licences.services.ProjetService;
 
 import jakarta.validation.Valid;
@@ -30,6 +31,7 @@ import lombok.AllArgsConstructor;
 //@RequestMapping(value = "/projet")
 public class ProjetController {
     private final ProjetService projetService;
+    private ProjetRepository projetRepository;
 
     @PostMapping(value = "/projet/creerprojet")
     public ResponseEntity<Projet> creerProjet(@Valid @RequestBody CreerProjetPayload creerProjetPayload){
@@ -37,11 +39,22 @@ public class ProjetController {
         return new ResponseEntity<Projet>(yes,HttpStatus.OK);
     }
 
-    /*@PutMapping(value = "modifier/{idProjet}")
+    @PutMapping(value = "modifier/{idProjet}")
     public ResponseEntity<Projet> modifierProjet(@Valid @PathVariable("idProjet") String idProjet, @RequestBody CreerProjetPayload creerProjetPayload){
-        Projet projet = projetService.modifierProjet(idProjet, creerProjetPayload);
-        return new ResponseEntity<Projet>(projet, HttpStatus.OK);
-    }*/
+       
+        Projet projetMisAjour = projetRepository.findByidProjet(idProjet);
+
+        projetMisAjour.setNomProjet(creerProjetPayload.getNomProjet());
+        projetMisAjour.setDescription(creerProjetPayload.getDescription());
+        projetMisAjour.setNombreService(creerProjetPayload.getNombreService());
+        projetMisAjour.setNomDirecteurProjet(creerProjetPayload.getNomDirecteurProjet());
+        projetMisAjour.setDateCreation(creerProjetPayload.getDateCreation());
+
+        projetRepository.save(projetMisAjour);
+
+        return ResponseEntity.ok(projetMisAjour);
+        
+    }
 
     @GetMapping(value = "/projet/listerprojets")
     public ResponseEntity<List<Projet>> listerProjets()
@@ -76,11 +89,11 @@ public class ProjetController {
         return msg;
     }
 
-    @DeleteMapping(value = "/supprimerLesProjets")
+    /*@DeleteMapping(value = "/supprimerLesProjets")
     public void superToutProjet()
     {
         projetService.supprimerToutProjet();
-    }
+    }*/
 
     
 
