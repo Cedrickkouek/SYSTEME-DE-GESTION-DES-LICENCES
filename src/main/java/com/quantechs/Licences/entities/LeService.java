@@ -1,5 +1,7 @@
 package com.quantechs.Licences.entities;
 
+import java.util.UUID;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -34,7 +36,7 @@ public class LeService {
     private String URLLogo;
     private String responsable;
     private int nombreLicence;
-    private String cleService;
+    private UUID cleService;
     private String IdProjet;
 
 

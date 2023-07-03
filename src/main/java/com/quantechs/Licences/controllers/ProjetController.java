@@ -1,6 +1,7 @@
 package com.quantechs.Licences.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+//import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.entities.Projet;
 import com.quantechs.Licences.enumeration.StatusProjet;
+//import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 //import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.enumeration.StatusProjet;
@@ -56,6 +59,12 @@ public class ProjetController {
         
     }
 
+    @GetMapping(value = "/verification/{cleProjet}")
+    public ResponseEntity<Projet> verificationProjetParCle(@PathVariable UUID cleProjet) throws ProjetNonTrouverException
+    {
+        return ResponseEntity.ok(projetService.verifierProjetParCle(cleProjet));
+    }
+
     @GetMapping(value = "/projet/listerprojets")
     public ResponseEntity<List<Projet>> listerProjets()
     {
@@ -89,6 +98,7 @@ public class ProjetController {
         return msg;
     }
 
+    
     /*@DeleteMapping(value = "/supprimerLesProjets")
     public void superToutProjet()
     {

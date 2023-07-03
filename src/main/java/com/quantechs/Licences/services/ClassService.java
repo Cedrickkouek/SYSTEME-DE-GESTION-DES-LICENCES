@@ -2,11 +2,14 @@ package com.quantechs.Licences.services;
 
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.LeService;
+//import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.enumeration.StatusService;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerServicePayload;
@@ -28,8 +31,10 @@ public class ClassService {
         .URLLogo(creerServicePayload.getURLLogo())
         .responsable(creerServicePayload.getResponsable())
         .nombreLicence(creerServicePayload.getNombreLicence())
-        .cleService(creerServicePayload.getCleService())
         .IdProjet(creerServicePayload.getIdProjet()).build();
+
+        UUID uuid = Generators.timeBasedGenerator().generate();
+        service.setCleService(uuid);
 
         service.setStatusService(StatusService.DISPONIBLE);
         serviceRepository.save(service);
@@ -70,12 +75,38 @@ public class ClassService {
         service.setURLLogo(creerServicePayload.getURLLogo());
         service.setResponsable(creerServicePayload.getResponsable());
         service.setNombreLicence(creerServicePayload.getNombreLicence());
-        service.setCleService(creerServicePayload.getCleService());
         service.setIdProjet(creerServicePayload.getIdProjet());
 
         serviceRepository.save(service);
 
         return service;
+    }
+
+    public LeService verifierServiceParCle(UUID cleService) throws ServiceNonTrouverException
+    {
+        LeService service = serviceRepository.findBycleService(cleService);
+        if(service!=null)
+        {
+            return service;
+        }
+        else{
+            throw new ServiceNonTrouverException("Le Service avec pour clé: "+cleService+" n'existe pas \u274C!");
+        }
+    }
+
+    public LeService changerEtatService(String idService, StatusService statusService) {
+        
+        LeService service = serviceRepository.findByidService(idService);
+
+        service.setStatusService(statusService);
+
+        serviceRepository.save(service);
+
+       return service;
+    }
+
+    public void supprimerToutProjet() {
+        serviceRepository.deleteAll();
     }
 
     /*public List<LeService> rechercheUnServiceParNom(String nom)

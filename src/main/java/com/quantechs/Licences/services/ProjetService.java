@@ -91,6 +91,21 @@ public class ProjetService {
         projetRepository.deleteAll();
     }
 
+    public Projet verifierProjetParCle(UUID cleProjet) throws ProjetNonTrouverException
+    {
+        
+        Projet projet = projetRepository.findBycleProjet(cleProjet);
+
+        if(projet!=null)
+        {
+            return projet;
+        }
+        else{
+            throw new ProjetNonTrouverException("Le Projet dont la clé est: "+cleProjet+" n'existe pas \u274C!");
+        }
+    }
+
+
     /*public List<Projet> rechercherProjetParNom(String nom){
         return projetRepository.findByNomProjet(nom);
     }*/

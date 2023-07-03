@@ -38,9 +38,9 @@ public class CreerServicePayload {
     @NotNull(message = "Le nombre de licence est requis")
     @NumberFormat
     private int nombreLicence;
-    @NotBlank(message = "clé de service requise")
-    @NotNull
-    private String cleService;
+    //@NotBlank(message = "clé de service requise")
+    //@NotNull
+    //private String cleService;
     @NotBlank(message = "ID de produit requis")
     @NotNull
     private String IdProjet;

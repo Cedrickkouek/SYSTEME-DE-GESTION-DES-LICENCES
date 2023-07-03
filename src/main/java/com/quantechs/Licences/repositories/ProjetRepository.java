@@ -1,5 +1,7 @@
 package com.quantechs.Licences.repositories;
 
+import java.util.UUID;
+
 //import java.util.List;
 
 //import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
@@ -11,6 +13,8 @@ import com.quantechs.Licences.entities.Projet;
 public interface ProjetRepository extends MongoRepository<Projet, String>{
     
     Projet findByidProjet(String idProjet);
+
+    Projet findBycleProjet(UUID cleProjet);
 
     //List<Projet>findByNomProjet(String nomProjet);
 

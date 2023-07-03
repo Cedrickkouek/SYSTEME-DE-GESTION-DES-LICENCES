@@ -5,6 +5,7 @@ import java.time.LocalDate;
 //import java.util.UUID;
 import java.util.UUID;
 
+//import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,6 +15,7 @@ import jakarta.persistence.Entity;
 //import jakarta.annotation.Generated;
 //import jakarta.persistence.GeneratedValue;
 //import jakarta.persistence.GenerationType;
+
 
 //import enumeration.StatusLicence;
 //import enumeration.validation;
@@ -43,6 +45,11 @@ public class Licence {
     private LocalDate dateExpiration;
     private Boolean validite;
     //@GeneratedValue(strategy = GenerationType.UUID)
+
+    /*@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "demo_sql")
+    @GenericGenerator(name = "demo_sql", strategy = "com.quantechs.Licences.entities.PrefixDeGenerationDesCles", parameters = {
+
+    })*/
     private UUID cleLicence;
     
 }
