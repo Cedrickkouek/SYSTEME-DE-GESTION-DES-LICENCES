@@ -3,7 +3,7 @@ package com.quantechs.Licences.entities;
 import java.time.LocalDate;
 //import java.util.UUID;
 //import java.util.UUID;
-import java.util.UUID;
+//import java.util.UUID;
 
 //import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.Id;
@@ -52,6 +52,6 @@ public class Licence {
     @GenericGenerator(name = "demo_sql", strategy = "com.quantechs.Licences.entities.PrefixDeGenerationDesCles", parameters = {
 
     })*/
-    private UUID cleLicence;
+    private String cleLicence;
     
 }

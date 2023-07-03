@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.uuid.Generators;
+//import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
@@ -66,7 +66,7 @@ public class LicenceService {
             
             throw new ServiceNonTrouverException("L'ID du Service: "+getidService+" n'a pas été trouvé \u274C!");
         }
-        //licenceRepository.save(licence);
+        
 
         boolean verifProjet = projetRepository.existsById(creerLicencePayload.getIdProjet());
         var getidProjet = licence.getIdProjet();
@@ -77,12 +77,32 @@ public class LicenceService {
         } else{
             throw new ServiceNonTrouverException("L'ID du Projet: "+getidProjet+" n'a pas été trouvé \u274C!");
         }
-
+        
         licence.setStatus(StatusLicence.ACTIF);
 
-        UUID uuid = Generators.timeBasedGenerator().generate();
-        licence.setCleLicence(uuid);
+        licenceRepository.save(licence);
 
+        //UUID uuid = Generators.timeBasedGenerator().generate();
+        //licence.setCleLicence(uuid);
+
+        var LicenceActu = licenceRepository.findByidLicence(licence.getIdLicence());
+
+        var idLicenceActu = LicenceActu.getIdLicence();
+        var idLicenceService = LicenceActu.getIdService();
+        var idLicenceProjet = LicenceActu.getIdProjet();
+        var hash = idLicenceActu.hashCode();
+
+        String etat;
+        if(LicenceActu.getStatus()==StatusLicence.ACTIF)
+        {
+             etat = "1"; 
+        }
+        else{
+             etat = "0";
+        }
+
+        String cle = idLicenceActu+"."+idLicenceService+"."+idLicenceProjet+"."+hash+"."+etat;
+        licence.setCleLicence(cle);
         licenceRepository.save(licence);
         
             return licence;
