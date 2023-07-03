@@ -37,7 +37,6 @@ public class ProjetService {
         projet.setCleProjet(uuid);
 
         projetRepository.save(projet);
-
         return projet;
     }
 
@@ -104,6 +103,8 @@ public class ProjetService {
             throw new ProjetNonTrouverException("Le Projet dont la clé est: "+cleProjet+" n'existe pas \u274C!");
         }
     }
+
+    
 
 
     /*public List<Projet> rechercherProjetParNom(String nom){

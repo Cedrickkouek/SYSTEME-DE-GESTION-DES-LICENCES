@@ -35,6 +35,8 @@ import lombok.NoArgsConstructor;
 public class Licence {
     @Id
     private String idLicence;
+    private String idService;
+    private String idProjet;
     private String nomService;
     private LocalDate dateAchat;
     private String idUtilisateur;

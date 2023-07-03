@@ -11,6 +11,9 @@ import lombok.Data;
 
 @Data
 public class CreerServicePayload {
+    //@NotBlank(message = "ID de projet requis")
+    @NotNull
+    private String IdProjet;
     @NotBlank(message = "Le nom du service est requis")
     @NotNull
     private String nomService;
@@ -41,7 +44,5 @@ public class CreerServicePayload {
     //@NotBlank(message = "clé de service requise")
     //@NotNull
     //private String cleService;
-    @NotBlank(message = "ID de produit requis")
-    @NotNull
-    private String IdProjet;
+    
 }

@@ -14,8 +14,14 @@ import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
+import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerLicencePayload;
 import com.quantechs.Licences.repositories.LicenceRepository;
+import com.quantechs.Licences.repositories.ProjetRepository;
+import com.quantechs.Licences.repositories.ServiceRepository;
+
+import lombok.AllArgsConstructor;
+
 import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.enumeration.StatusProjet;
 
@@ -24,15 +30,20 @@ import com.quantechs.Licences.enumeration.StatusLicence;
 //import jakarta.persistence.GenerationType;
 
 @Service
+@AllArgsConstructor
 public class LicenceService {
     @Autowired
 
+    private final ServiceRepository serviceRepository;
     private LicenceRepository licenceRepository;
+    private final ProjetRepository projetRepository;
 
 
     //Permet d'enregistrer un objet "licence dans le repository License"
-    public Licence creerLicence(CreerLicencePayload creerLicencePayload){
+    public Licence creerLicence(CreerLicencePayload creerLicencePayload) throws ServiceNonTrouverException {
         Licence licence = Licence.builder()
+        .idService(creerLicencePayload.getIdService())
+        .idProjet(creerLicencePayload.getIdProjet())
         .nomService(creerLicencePayload.getNomService())
         .dateAchat(creerLicencePayload.getDateAchat())
         .idUtilisateur(creerLicencePayload.getIdUtilisateur())
@@ -41,6 +52,31 @@ public class LicenceService {
         .idPaiement(creerLicencePayload.getIdPaiement())
         .dateExpiration(creerLicencePayload.getDateExpiration()).build();
         //.cleLicence(creerLicencePayload.getCleLicence()).build();
+
+        //var getidService = licence.getIdService();
+        boolean verfication = serviceRepository.existsById(creerLicencePayload.getIdService());
+        var getidService = licence.getIdService();
+        if(verfication)
+        {
+            //System.out.println("plein");
+            licence.setIdService(getidService);
+            licenceRepository.save(licence);
+        }
+        else{
+            
+            throw new ServiceNonTrouverException("L'ID du Service: "+getidService+" n'a pas été trouvé \u274C!");
+        }
+        //licenceRepository.save(licence);
+
+        boolean verifProjet = projetRepository.existsById(creerLicencePayload.getIdProjet());
+        var getidProjet = licence.getIdProjet();
+        if(verifProjet)
+        {
+            licence.setIdProjet(getidProjet);
+            licenceRepository.save(licence);
+        } else{
+            throw new ServiceNonTrouverException("L'ID du Projet: "+getidProjet+" n'a pas été trouvé \u274C!");
+        }
 
         licence.setStatus(StatusLicence.ACTIF);
 

@@ -25,6 +25,7 @@ import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
+import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 //import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.payloads.CreerLicencePayload;
 import com.quantechs.Licences.services.LicenceService;
@@ -42,7 +43,7 @@ public class LicenceController {
     //private final StatusLicence status;
 
     @PostMapping(value = "/creerlicence")
-    public ResponseEntity<Licence> creerLicence( @Valid @RequestBody CreerLicencePayload CreerLicencePayload){
+    public ResponseEntity<Licence> creerLicence( @Valid @RequestBody CreerLicencePayload CreerLicencePayload) throws ServiceNonTrouverException{
         var res = licenceService.creerLicence(CreerLicencePayload);
         return new ResponseEntity<Licence>(res,HttpStatus.OK);
     }

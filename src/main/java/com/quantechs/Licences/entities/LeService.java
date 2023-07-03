@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
 public class LeService {
     @Id
     private String idService;
+    private String IdProjet;
     private String nomService;
     private String description;
     private String validation;
@@ -37,7 +38,5 @@ public class LeService {
     private String responsable;
     private int nombreLicence;
     private UUID cleService;
-    private String IdProjet;
-
 
 }

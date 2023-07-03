@@ -11,32 +11,51 @@ import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.LeService;
 //import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.enumeration.StatusService;
+import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerServicePayload;
+import com.quantechs.Licences.repositories.ProjetRepository;
 import com.quantechs.Licences.repositories.ServiceRepository;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @Service
-
+@AllArgsConstructor
 public class ClassService {
     @Autowired
-    private ServiceRepository serviceRepository;
 
-    public LeService creerService(@Valid CreerServicePayload creerServicePayload) {
+    private ProjetRepository projectRepository;
+    private final ServiceRepository serviceRepository;
+
+    public LeService creerService(@Valid CreerServicePayload creerServicePayload) throws ProjetNonTrouverException{
         LeService service = LeService.builder()
+        .IdProjet(creerServicePayload.getIdProjet())
         .nomService(creerServicePayload.getNomService())
         .description(creerServicePayload.getDescription())
         .prix(creerServicePayload.getPrix())
         .URLLogo(creerServicePayload.getURLLogo())
         .responsable(creerServicePayload.getResponsable())
-        .nombreLicence(creerServicePayload.getNombreLicence())
-        .IdProjet(creerServicePayload.getIdProjet()).build();
+        .nombreLicence(creerServicePayload.getNombreLicence()).build();
+        //affecterIdProjet(idProjet, service);
+
+        boolean verification = projectRepository.existsById(creerServicePayload.getIdProjet());     
+
+        var getidProjet = service.getIdProjet();
+        //boolean verfier = getidService;()
+        if(verification)
+        {
+            service.setIdProjet(getidProjet);
+        }
+        else{
+            throw new ProjetNonTrouverException("L'ID du Projet: "+getidProjet+" n'a pas été trouvé \u274C!");
+        }
+        service.setStatusService(StatusService.DISPONIBLE);
 
         UUID uuid = Generators.timeBasedGenerator().generate();
         service.setCleService(uuid);
 
-        service.setStatusService(StatusService.DISPONIBLE);
+        
         serviceRepository.save(service);
 
         return service;
@@ -75,8 +94,8 @@ public class ClassService {
         service.setURLLogo(creerServicePayload.getURLLogo());
         service.setResponsable(creerServicePayload.getResponsable());
         service.setNombreLicence(creerServicePayload.getNombreLicence());
-        service.setIdProjet(creerServicePayload.getIdProjet());
-
+        //service.setIdProjet(creerServicePayload.getIdProjet());
+        
         serviceRepository.save(service);
 
         return service;
@@ -105,10 +124,21 @@ public class ClassService {
        return service;
     }
 
-    public void supprimerToutProjet() {
+    public void supprimerToutService() {
         serviceRepository.deleteAll();
     }
 
+    public void affecterIdProjet(String idProjet, LeService service)
+    {
+        boolean verifierProjet = projectRepository.existsById(idProjet);
+
+        if(verifierProjet)
+        {
+            service.setIdProjet(idProjet);
+            serviceRepository.save(service);
+        }
+
+    }
     /*public List<LeService> rechercheUnServiceParNom(String nom)
     {
         return serviceRepository.findBynomService(nom);

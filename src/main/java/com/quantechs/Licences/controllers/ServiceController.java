@@ -20,6 +20,7 @@ import com.quantechs.Licences.entities.LeService;
 //import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.enumeration.StatusProjet;
 import com.quantechs.Licences.enumeration.StatusService;
+import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
@@ -40,9 +41,9 @@ public class ServiceController {
     //private final StatusLicence status;
 
     @PostMapping(value = "/creerservice")
-    public ResponseEntity<LeService> creerService( @Valid @RequestBody CreerServicePayload CreerServicePayload){
+    public ResponseEntity<LeService> creerService( @Valid @RequestBody CreerServicePayload CreerServicePayload) throws ProjetNonTrouverException{
         var res = classService.creerService(CreerServicePayload);
-        return new ResponseEntity<LeService>(res,HttpStatus.OK);
+        return new ResponseEntity<LeService>(res, HttpStatus.OK);
     }
     
     @GetMapping(value = "/listerservices")
@@ -91,7 +92,7 @@ public class ServiceController {
         serviceMisAjour.setURLLogo(creerServicePayload.getURLLogo());
         serviceMisAjour.setResponsable(creerServicePayload.getResponsable());
         serviceMisAjour.setNombreLicence(creerServicePayload.getNombreLicence());
-        serviceMisAjour.setIdProjet(creerServicePayload.getIdProjet());
+        //serviceMisAjour.setIdProjet(creerServicePayload.getIdProjet());
 
         serviceRepository.save(serviceMisAjour);
 
@@ -99,11 +100,11 @@ public class ServiceController {
         
     }
 
-    /*@DeleteMapping(value = "/supprimerLesService")
+    @DeleteMapping(value = "/supprimerLesService")
     public void superToutProjet()
     {
-        classService.supprimerToutProjet();
-    }*/
+        classService.supprimerToutService();
+    }
 
     /*@GetMapping(value = "/{nomService}")
     public ResponseEntity<List<Licence>> rechercherParNomLicence(@PathVariable String nomService)

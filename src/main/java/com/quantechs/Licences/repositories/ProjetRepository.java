@@ -14,6 +14,8 @@ public interface ProjetRepository extends MongoRepository<Projet, String>{
     
     Projet findByidProjet(String idProjet);
 
+    //public boolean existsById(String idProject);
+
     Projet findBycleProjet(UUID cleProjet);
 
     //List<Projet>findByNomProjet(String nomProjet);

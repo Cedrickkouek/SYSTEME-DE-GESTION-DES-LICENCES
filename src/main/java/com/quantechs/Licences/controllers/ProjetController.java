@@ -99,11 +99,11 @@ public class ProjetController {
     }
 
     
-    /*@DeleteMapping(value = "/supprimerLesProjets")
+    @DeleteMapping(value = "/supprimerLesProjets")
     public void superToutProjet()
     {
         projetService.supprimerToutProjet();
-    }*/
+    }
 
     
 

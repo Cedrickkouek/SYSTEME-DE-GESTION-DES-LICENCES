@@ -22,10 +22,13 @@ import lombok.Data;
 
 @Data
 public class CreerLicencePayload {
-    //@NotBlank(message = "ID requis")
-    //@NotNull
+    @NotBlank(message = "ID du Service requis")
+    @NotNull
     //@Id
-    //private String idService;
+    private String idService;
+    @NotBlank(message = "ID du Projet requis")
+    @NotNull
+    private String idProjet;
     @NotBlank(message = "Le nom du service est requis")
     @NotNull(message = "Le nom du servicede doit pas etre null")
     private String nomService;
