@@ -17,13 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.quantechs.Licences.entities.LeService;
 //import com.quantechs.Licences.entities.Projet;
+//import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.enumeration.StatusProjet;
 import com.quantechs.Licences.enumeration.StatusService;
 //import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
+//import com.quantechs.Licences.payloads.CreerProjetPayload;
 import com.quantechs.Licences.payloads.CreerServicePayload;
 import com.quantechs.Licences.services.ClassService;
+import com.quantechs.Licences.repositories.ServiceRepository;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -33,6 +36,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping(value = "/service")
 public class ServiceController {
     private final ClassService classService;
+    private ServiceRepository serviceRepository;
     //private final StatusLicence status;
 
     @PostMapping(value = "/creerservice")
@@ -74,6 +78,25 @@ public class ServiceController {
         var res = classService.changerEtatService(idService, statusService);
 
         return new ResponseEntity<LeService>(res, HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping(value = "modifier/{idService}")
+    public ResponseEntity<LeService> modifierService(@Valid @PathVariable("idService") String idService, @RequestBody CreerServicePayload creerServicePayload){
+       
+        LeService serviceMisAjour = serviceRepository.findByidService(idService);
+
+        serviceMisAjour.setNomService(creerServicePayload.getNomService());
+        serviceMisAjour.setDescription(creerServicePayload.getDescription());
+        serviceMisAjour.setPrix(creerServicePayload.getPrix());
+        serviceMisAjour.setURLLogo(creerServicePayload.getURLLogo());
+        serviceMisAjour.setResponsable(creerServicePayload.getResponsable());
+        serviceMisAjour.setNombreLicence(creerServicePayload.getNombreLicence());
+        serviceMisAjour.setIdProjet(creerServicePayload.getIdProjet());
+
+        serviceRepository.save(serviceMisAjour);
+
+        return ResponseEntity.ok(serviceMisAjour);
+        
     }
 
     /*@DeleteMapping(value = "/supprimerLesService")
