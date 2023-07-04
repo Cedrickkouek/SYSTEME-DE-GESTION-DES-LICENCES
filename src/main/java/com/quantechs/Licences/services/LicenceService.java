@@ -2,7 +2,7 @@ package com.quantechs.Licences.services;
 
 import java.util.List;
 //import java.util.UUID;
-import java.util.UUID;
+//import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -101,7 +101,7 @@ public class LicenceService {
              etat = "0";
         }
 
-        String cle = idLicenceActu+"."+idLicenceService+"."+idLicenceProjet+"."+hash+"."+etat;
+        String cle = idLicenceActu+"-"+idLicenceService+"-"+idLicenceProjet+"-"+hash+"-"+etat;
         licence.setCleLicence(cle);
         licenceRepository.save(licence);
         
@@ -133,15 +133,47 @@ public class LicenceService {
         }
     } 
 
-    public Licence verifierLicenceParCle(UUID cleLicence) throws LicenceNonTrouverException
+    public String verifierLicenceParCle(String cleLicence) throws LicenceNonTrouverException
     {
-        Licence licence = licenceRepository.findBycleLicence(cleLicence);
-        if(licence!=null)
+        String[] partieCle = cleLicence.split("-");
+        int t = partieCle.length;
+        System.out.print("LA TAILLE DE LA PARTIECLE est: "+t);
+
+        if(partieCle.length == 5)
         {
-            return licence;
-        }
+            String partCle1 = partieCle[0];
+            boolean verification1 = licenceRepository.existsById(partCle1);
+
+            String partCle2 = partieCle[1];
+            boolean verification2 = serviceRepository.existsById(partCle2);
+
+            String partCle3 = partieCle[2];
+            boolean verification3 = projetRepository.existsById(partCle3);
+
+            String partCle4 = partieCle[3];
+            int partCle4ToInt = Integer.parseInt(partCle4);
+
+            int hashLis = partCle1.hashCode() ;
+
+        //String partcle5 = partieCle[4];
+
+            Licence licence = licenceRepository.findBycleLicence(cleLicence);
+            
+        
+        
+            if(verification1 && verification2 && verification3 && (hashLis == partCle4ToInt) && (licence!=null))
+            {   
+                String msg = "La Licene avec pour clé: "+cleLicence+" est Valid \u2705";
+                return msg;
+            }
+            else{
+            String msg = "La Licence avec pour clé: "+cleLicence+" est Invalid \u274C!";
+            return msg;
+            }
+        } 
+        
         else{
-            throw new LicenceNonTrouverException("La Licence avec pour clé: "+cleLicence+" n'existe pas \u274C!");
+            throw new LicenceNonTrouverException("La Licence avec pour clé: "+cleLicence+" ne respecte pas le format requis (taille different de 5) \u274C!");
         }
     }
 

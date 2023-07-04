@@ -41,6 +41,15 @@ public class ApplicationExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(NumberFormatException.class)
+    public Map<String, String> gererExceptionsDeType(NumberFormatException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("\u274C Format d'entrée non valid, verifier les champs et reessayer! \u274C ", excep.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ProjetNonTrouverException.class)
     public Map<String, String> gererExceptionsDesProjets(ProjetNonTrouverException excep)
     {

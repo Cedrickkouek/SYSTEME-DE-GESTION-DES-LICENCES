@@ -1,7 +1,7 @@
 package com.quantechs.Licences.controllers;
 
 import java.util.List;
-import java.util.UUID;
+//import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,9 +81,13 @@ public class LicenceController {
     }
 
     @GetMapping(value = "/verification/{cleLicence}")
-    public ResponseEntity<Licence> verificationLicenceParCle(@PathVariable UUID cleLicence) throws LicenceNonTrouverException
+    public String verificationLicenceParCle(@PathVariable String cleLicence) throws LicenceNonTrouverException 
     {
-        return ResponseEntity.ok(licenceService.verifierLicenceParCle(cleLicence));
+        var res = licenceService.verifierLicenceParCle(cleLicence);
+        return res;
+
+        /*String msg = "La Licene avec pour clé: "+cleLicence+" est Valid \u2705";
+        return msg;*/
     }
 
     @DeleteMapping(value = "supprimer/{idLicence}")
