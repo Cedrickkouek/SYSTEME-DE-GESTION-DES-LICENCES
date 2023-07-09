@@ -1,7 +1,7 @@
 package com.quantechs.Licences.entities;
 
 import java.time.LocalDate;
-import java.util.UUID;
+//import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -31,5 +31,5 @@ public class Projet {
     private String nomDirecteurProjet;
     private LocalDate dateCreation;
     private String urlLOgo;
-    private UUID cleProjet;
+    private String cleProjet;
 }

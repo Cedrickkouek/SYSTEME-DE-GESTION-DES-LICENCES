@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.uuid.Generators;
+//import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.LeService;
 //import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.enumeration.StatusService;
@@ -52,8 +52,29 @@ public class ClassService {
         }
         service.setStatusService(StatusService.DISPONIBLE);
 
-        UUID uuid = Generators.timeBasedGenerator().generate();
-        service.setCleService(uuid);
+         
+        serviceRepository.save(service);
+
+        var serviceActu = serviceRepository.findByidService(service.getIdService());
+        var idServiceProjet = serviceActu.getIdProjet();
+        var idService = serviceActu.getIdService();
+        var hash = idService.hashCode();
+
+        String etatS;
+        if(serviceActu.getStatusService()==StatusService.DISPONIBLE)
+        {
+            etatS = "1";
+        }
+        else{
+            etatS = "0";
+        }
+
+        String cle = idService+"-"+idServiceProjet+"-"+hash+"-"+etatS;
+        service.setCleService(cle);
+        serviceRepository.save(service);
+
+        /*UUID uuid = Generators.timeBasedGenerator().generate();
+        service.setCleService(uuid);*/
 
         
         serviceRepository.save(service);

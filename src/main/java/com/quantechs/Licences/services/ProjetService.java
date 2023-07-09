@@ -1,12 +1,12 @@
 package com.quantechs.Licences.services;
 
 import java.util.List;
-import java.util.UUID;
+//import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import  org.springframework.stereotype.Service;
 
-import com.fasterxml.uuid.Generators;
+//import com.fasterxml.uuid.Generators;
 //import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.entities.Projet;
@@ -29,12 +29,31 @@ public class ProjetService {
         .description(creerProjetPayload.getDescription())
         .nombreService(creerProjetPayload.getNombreService())
         .nomDirecteurProjet(creerProjetPayload.getNomDirecteurProjet())
-        .dateCreation(creerProjetPayload.getDateCreation()).build();
-        
+        .dateCreation(creerProjetPayload.getDateCreation())
+        .urlLOgo(creerProjetPayload.getUrlLOgo()).build();
         projet.setStatusProjet(StatusProjet.ENCOURS);
+        projetRepository.save(projet);
+        var projetActu = projetRepository.findBycleProjet(projet.getCleProjet());
 
-        UUID uuid = Generators.timeBasedGenerator().generate();
-        projet.setCleProjet(uuid);
+        var idProjetActu = projetActu.getIdProjet();
+        var hash = idProjetActu.hashCode();
+
+        String etatP;
+        if(projetActu.getStatusProjet()==StatusProjet.ENCOURS)
+        {
+            etatP = "1";
+        }
+        else
+        {
+            etatP = "0";
+        }
+
+        String cle = idProjetActu+"-"+hash+"-"+etatP;
+        projet.setCleProjet(cle);
+        projetRepository.save(projet);
+
+        /*UUID uuid = Generators.timeBasedGenerator().generate();
+        projet.setCleProjet(uuid);*/
 
         projetRepository.save(projet);
         return projet;
@@ -90,7 +109,7 @@ public class ProjetService {
         projetRepository.deleteAll();
     }
 
-    public Projet verifierProjetParCle(UUID cleProjet) throws ProjetNonTrouverException
+    public Projet verifierProjetParCle(String cleProjet) throws ProjetNonTrouverException
     {
         
         Projet projet = projetRepository.findBycleProjet(cleProjet);

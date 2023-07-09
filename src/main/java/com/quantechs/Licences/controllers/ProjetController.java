@@ -1,7 +1,7 @@
 package com.quantechs.Licences.controllers;
 
 import java.util.List;
-import java.util.UUID;
+//import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +60,7 @@ public class ProjetController {
     }
 
     @GetMapping(value = "/verification/{cleProjet}")
-    public ResponseEntity<Projet> verificationProjetParCle(@PathVariable UUID cleProjet) throws ProjetNonTrouverException
+    public ResponseEntity<Projet> verificationProjetParCle(@PathVariable String cleProjet) throws ProjetNonTrouverException
     {
         return ResponseEntity.ok(projetService.verifierProjetParCle(cleProjet));
     }

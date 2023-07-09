@@ -1,5 +1,9 @@
 package com.quantechs.Licences.services;
 
+import java.time.LocalDate;
+//import java.time.LocalDate;
+//import java.time.chrono.ChronoLocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 //import java.util.UUID;
 //import java.util.UUID;
@@ -7,8 +11,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.quantechs.Licences.entities.LeService;
 //import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.Licence;
+import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
@@ -20,10 +26,13 @@ import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.repositories.ProjetRepository;
 import com.quantechs.Licences.repositories.ServiceRepository;
 
+//import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 
 import com.quantechs.Licences.enumeration.StatusLicence;
+import com.quantechs.Licences.enumeration.StatusProjet;
 //import com.quantechs.Licences.enumeration.StatusProjet;
+import com.quantechs.Licences.enumeration.StatusService;
 
 //import jakarta.annotation.Generated;
 //import jakarta.persistence.GeneratedValue;
@@ -44,13 +53,10 @@ public class LicenceService {
         Licence licence = Licence.builder()
         .idService(creerLicencePayload.getIdService())
         .idProjet(creerLicencePayload.getIdProjet())
-        .nomService(creerLicencePayload.getNomService())
-        .dateAchat(creerLicencePayload.getDateAchat())
         .idUtilisateur(creerLicencePayload.getIdUtilisateur())
         .nomUtilisateur(creerLicencePayload.getNomUtilisateur())
-        .prix(creerLicencePayload.getPrix())
-        .idPaiement(creerLicencePayload.getIdPaiement())
-        .dateExpiration(creerLicencePayload.getDateExpiration()).build();
+        .idPaiement(creerLicencePayload.getIdPaiement()).build();
+        //.dateExpiration(creerLicencePayload.getDateExpiration())
         //.cleLicence(creerLicencePayload.getCleLicence()).build();
 
         //var getidService = licence.getIdService();
@@ -66,6 +72,12 @@ public class LicenceService {
             
             throw new ServiceNonTrouverException("L'ID du Service: "+getidService+" n'a pas été trouvé \u274C!");
         }
+
+        LeService servPrix =  serviceRepository.findByidService(creerLicencePayload.getIdService());
+
+        var prixserv = servPrix.getPrix();
+        
+        licence.setPrix(prixserv);
         
 
         boolean verifProjet = projetRepository.existsById(creerLicencePayload.getIdProjet());
@@ -77,13 +89,44 @@ public class LicenceService {
         } else{
             throw new ServiceNonTrouverException("L'ID du Projet: "+getidProjet+" n'a pas été trouvé \u274C!");
         }
+
+        var nomduServ = serviceRepository.findByidService(creerLicencePayload.getIdService());
+        var nomService = nomduServ.getNomService();
+        licence.setNomService(nomService);
+
         
         licence.setStatus(StatusLicence.ACTIF);
 
+        LocalDate now = LocalDate.now();
+
+        licence.setDateAchat(now);
+
+        /* Setting ending date of licence */
         licenceRepository.save(licence);
+
+        var startDate = licence.getDateAchat();
+
+        var endDate = startDate.plusDays(30);
+
+        licence.setDateExpiration(endDate);
+
 
         //UUID uuid = Generators.timeBasedGenerator().generate();
         //licence.setCleLicence(uuid);
+
+        long jourValidite = ChronoUnit.DAYS.between(licence.getDateAchat(), licence.getDateExpiration());
+
+        
+        if(jourValidite > -1)
+        {
+            licence.setStatus(StatusLicence.ACTIF);
+            licence.setValidite(jourValidite+" jour(s)");
+        }
+        else{
+            licence.setStatus(StatusLicence.NONACTIF);
+            licence.setValidite("Licence expiré!");
+        }
+
 
         var LicenceActu = licenceRepository.findByidLicence(licence.getIdLicence());
 
@@ -121,11 +164,19 @@ public class LicenceService {
     public Licence rechercheUneLicenceParId(String id) throws LicenceNonTrouverException
     {
         boolean verification = licenceRepository.existsById(id);
+
+        Licence licence =  licenceRepository.findByidLicence(id);
+
+        if(licence.getStatus()==StatusLicence.NONACTIF)
+        {
+            
+            licence.getIdLicence() ;
+        }
         
 
         if(verification)
         {
-            Licence licence = licenceRepository.findByidLicence(id);
+            //Licence licence = licenceRepository.findByidLicence(id);
             return licence;
         }
         else{
@@ -158,8 +209,7 @@ public class LicenceService {
         //String partcle5 = partieCle[4];
 
             Licence licence = licenceRepository.findBycleLicence(cleLicence);
-            
-        
+             
         
             if(verification1 && verification2 && verification3 && (hashLis == partCle4ToInt) && (licence!=null))
             {   
@@ -177,15 +227,30 @@ public class LicenceService {
         }
     }
 
-    public void supprimerLicenceParId(String id)
+    /*public void supprimerLicenceParId(String id)
     {
          licenceRepository.deleteById(id);
-    }
+    }*/
 
     public Licence activerLicence(String idLicence) /*throws LicenceNonTrouverException*/
     {
         Licence licence = licenceRepository.findByidLicence(idLicence);
         licence.setStatus(StatusLicence.ACTIF);
+
+        LeService service = serviceRepository.findByidService(licence.getIdService());
+        service.setStatusService(StatusService.DISPONIBLE);
+        serviceRepository.save(service);
+
+        Projet projet = projetRepository.findByidProjet(licence.getIdProjet());
+        projet.setStatusProjet(StatusProjet.ENCOURS);
+        projetRepository.save(projet);
+
+        LocalDate now = LocalDate.now();
+        licence.setDateAchat(now);
+        var startDate = licence.getDateAchat();
+        var endDate = startDate.plusDays(30);
+        licence.setDateExpiration(endDate);
+
         licenceRepository.save(licence);
         return licence;
 
@@ -216,6 +281,13 @@ public class LicenceService {
     public Licence desactiverLicence(String idLicence) /*throws LicenceNonTrouverException*/
     { 
         Licence licence = licenceRepository.findByidLicence(idLicence);
+        licence.setStatus(StatusLicence.NONACTIF);
+        
+        var licenceService = serviceRepository.findByidService(licence.getIdService());
+        licenceService.setStatusService(StatusService.NONDISPONIBLE);
+
+        var projetService = projetRepository.findByidProjet(licence.getIdProjet());
+        projetService.setStatusProjet(StatusProjet.TERMINER);
 
         licence.setStatus(StatusLicence.NONACTIF);
         licenceRepository.save(licence);

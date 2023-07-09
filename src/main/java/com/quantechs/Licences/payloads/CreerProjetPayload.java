@@ -2,6 +2,7 @@ package com.quantechs.Licences.payloads;
 
 import java.time.LocalDate;
 
+import org.hibernate.validator.constraints.URL;
 //import org.hibernate.validator.constraints.URL;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
@@ -36,10 +37,10 @@ public class CreerProjetPayload {
     @NotNull(message = "La date de création du projet est requise")
     @DateTimeFormat
     private LocalDate dateCreation;
-    //@NotBlank
-    //@NotNull(message = "Le lien du logo est requis")
-    //@URL
-    //private String urlLOgo;
+    @NotBlank
+    @NotNull(message = "Le lien du logo est requis")
+    @URL
+    private String urlLOgo;
     //@NotBlank(message = "Clé de projet manquante")
     //@NotNull
     //private String cleProjet; 

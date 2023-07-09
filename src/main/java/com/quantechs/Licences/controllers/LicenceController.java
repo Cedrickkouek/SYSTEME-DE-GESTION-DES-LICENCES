@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.DeleteMapping;
+//import org.springframework.web.bind.annotation.DeleteMapping;
 //import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,19 +48,19 @@ public class LicenceController {
         return new ResponseEntity<Licence>(res,HttpStatus.OK);
     }
 
-    /*@PutMapping(value="/activerlicence/{idLicence}")
+    @PutMapping(value="/activerlicence/{idLicence}")
     public ResponseEntity<Licence> activerLicence(@PathVariable String idLicence) throws LicenceNonTrouverException{
         var res = licenceService.activerLicence(idLicence); 
 
         return new ResponseEntity<Licence>(res, HttpStatus.ACCEPTED);
-    }*/
+    }
 
-    /*@PutMapping(value="/desactiverlicence/{idLicence}")
+    @PutMapping(value="/desactiverlicence/{idLicence}")
     public ResponseEntity<Licence> deactiverLicence(@PathVariable String idLicence) throws LicenceNonTrouverException{
         var res = licenceService.desactiverLicence(idLicence); 
 
         return new ResponseEntity<Licence>(res, HttpStatus.ACCEPTED);
-    }*/
+    }
     
     @GetMapping(value = "/listerlicences")
     public ResponseEntity<List<Licence>> listerToutesLicences()
@@ -90,13 +90,13 @@ public class LicenceController {
         return msg;*/
     }
 
-    @DeleteMapping(value = "supprimer/{idLicence}")
+    /*@DeleteMapping(value = "supprimer/{idLicence}")
     public String supprimerUneLicenceParId(@PathVariable String idLicence)
     {
         licenceService.supprimerLicenceParId(idLicence);
         String msg = "La Licence avec pour ID: "+idLicence+" a été supprimée avec succès \u2705";
         return msg;
-    }
+    }*/
 
 
     @PutMapping(value = "changerStatusLicence/{idLicence}")

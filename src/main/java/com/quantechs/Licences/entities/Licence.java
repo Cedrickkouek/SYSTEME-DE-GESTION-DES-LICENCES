@@ -45,7 +45,7 @@ public class Licence {
     private double prix;
     private String idPaiement;
     private LocalDate dateExpiration;
-    private Boolean validite;
+    private String validite;
     //@GeneratedValue(strategy = GenerationType.UUID)
 
     /*@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "demo_sql")

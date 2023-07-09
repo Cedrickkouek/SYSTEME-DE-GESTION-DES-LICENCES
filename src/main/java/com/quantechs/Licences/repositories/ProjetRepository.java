@@ -1,6 +1,6 @@
 package com.quantechs.Licences.repositories;
 
-import java.util.UUID;
+//import java.util.UUID;
 
 //import java.util.List;
 
@@ -16,7 +16,7 @@ public interface ProjetRepository extends MongoRepository<Projet, String>{
 
     //public boolean existsById(String idProject);
 
-    Projet findBycleProjet(UUID cleProjet);
+    Projet findBycleProjet(String cleProjet);
 
     //List<Projet>findByNomProjet(String nomProjet);
 
