@@ -307,13 +307,13 @@ public class LicenceService {
         Licence licence = licenceRepository.findByidLicence(idLicence);
         licence.setStatus(StatusLicence.NONACTIF);
         
-        var licenceService = serviceRepository.findByidService(licence.getIdService());
+        /*var licenceService = serviceRepository.findByidService(licence.getIdService());
         licenceService.setStatusService(StatusService.NONDISPONIBLE);
-        serviceRepository.save(licenceService);
+        serviceRepository.save(licenceService); */
 
-        var projetService = projetRepository.findByidProjet(licence.getIdProjet());
+        /*var projetService = projetRepository.findByidProjet(licence.getIdProjet());
         projetService.setStatusProjet(StatusProjet.TERMINER);
-        projetRepository.save(projetService);
+        projetRepository.save(projetService);*/
 
         var cleLicence = licence.getCleLicence();
         String[] partieCle = cleLicence.split("-");

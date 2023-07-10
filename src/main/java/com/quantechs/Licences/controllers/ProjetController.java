@@ -49,7 +49,7 @@ public class ProjetController {
 
         projetMisAjour.setNomProjet(creerProjetPayload.getNomProjet());
         projetMisAjour.setDescription(creerProjetPayload.getDescription());
-        projetMisAjour.setNombreService(creerProjetPayload.getNombreService());
+        //projetMisAjour.setNombreService(creerProjetPayload.getNombreService());
         projetMisAjour.setNomDirecteurProjet(creerProjetPayload.getNomDirecteurProjet());
         projetMisAjour.setDateCreation(creerProjetPayload.getDateCreation());
 

@@ -4,32 +4,40 @@ import java.util.List;
 //import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+//import org.springframework.data.mongodb.repository.MongoRepository;
 import  org.springframework.stereotype.Service;
 
+import com.quantechs.Licences.entities.LeService;
+import com.quantechs.Licences.entities.Licence;
 //import com.fasterxml.uuid.Generators;
 //import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.entities.Projet;
+import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.enumeration.StatusProjet;
+import com.quantechs.Licences.enumeration.StatusService;
 //import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.payloads.CreerLicencePayload;
 import com.quantechs.Licences.payloads.CreerProjetPayload;
+import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.repositories.ProjetRepository;
 //import com.quantechs.Licences.repositories.ServiceRepository;
+import com.quantechs.Licences.repositories.ServiceRepository;
 
 @Service
 public class ProjetService {
     @Autowired 
 
     private ProjetRepository projetRepository;
-    //private ServiceRepository serviceRepository;
+    private LicenceRepository licenceRepository;
+    private ServiceRepository serviceRepository;
 
         public Projet creerProjet(CreerProjetPayload creerProjetPayload){
         Projet projet = Projet.builder()
         .nomProjet(creerProjetPayload.getNomProjet())
-        .description(creerProjetPayload.getDescription())
-        .nombreService(creerProjetPayload.getNombreService())
+        .description(creerProjetPayload.getDescription())    
         .nomDirecteurProjet(creerProjetPayload.getNomDirecteurProjet())
         .dateCreation(creerProjetPayload.getDateCreation())
         .urlLOgo(creerProjetPayload.getUrlLOgo()).build();
@@ -37,6 +45,7 @@ public class ProjetService {
         projetRepository.save(projet);
         var projetActu = projetRepository.findBycleProjet(projet.getCleProjet());
 
+        projet.setNombreService(0);
         
 
         var idProjetActu = projetActu.getIdProjet();
@@ -90,8 +99,23 @@ public class ProjetService {
     public Projet activerUnProjet(String idProjet)
     {
         Projet projet = projetRepository.findByidProjet(idProjet);
-
         projet.setStatusProjet(StatusProjet.ENCOURS);
+
+        var listLicenceProjet = licenceRepository.findAll(Sort.by(idProjet));
+
+        for (Licence projet2 : listLicenceProjet) {
+            projet2.setStatus(StatusLicence.ACTIF);
+            licenceRepository.save(projet2);
+        }
+
+
+        var listServiceProjet = serviceRepository.findAll(Sort.by(idProjet));
+
+        for (LeService service : listServiceProjet) {
+            service.setStatusService(StatusService.DISPONIBLE);
+            serviceRepository.save(service);
+        }
+
 
         projetRepository.save(projet);
 
@@ -101,8 +125,22 @@ public class ProjetService {
     public Projet desactiverUnProjet(String idProjet)
     {
         Projet projet = projetRepository.findByidProjet(idProjet);
-
         projet.setStatusProjet(StatusProjet.TERMINER);
+
+        var listLicenceProjet = licenceRepository.findAll(Sort.by(idProjet));
+
+        for (Licence projet2 : listLicenceProjet) {
+            projet2.setStatus(StatusLicence.NONACTIF);
+
+            licenceRepository.save(projet2);
+        }
+
+        var listServiceProjet = serviceRepository.findAll(Sort.by(idProjet));
+
+        for (LeService service : listServiceProjet) {
+            service.setStatusService(StatusService.NONDISPONIBLE);
+            serviceRepository.save(service);
+        }
 
         projetRepository.save(projet);
 

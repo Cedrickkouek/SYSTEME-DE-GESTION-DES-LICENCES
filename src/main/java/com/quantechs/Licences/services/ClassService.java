@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 //import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.LeService;
+import com.quantechs.Licences.entities.Licence;
+import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.enumeration.StatusProjet;
 //import com.quantechs.Licences.entities.Licence;
@@ -16,6 +19,7 @@ import com.quantechs.Licences.enumeration.StatusService;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerServicePayload;
+import com.quantechs.Licences.repositories.LicenceRepository;
 //import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.repositories.ProjetRepository;
 import com.quantechs.Licences.repositories.ServiceRepository;
@@ -30,7 +34,7 @@ public class ClassService {
 
     private ProjetRepository projectRepository;
     private final ServiceRepository serviceRepository;
-    //private LicenceRepository licenceRepository;
+    private LicenceRepository licenceRepository;
 
     public LeService creerService(@Valid CreerServicePayload creerServicePayload) throws ProjetNonTrouverException{
         LeService service = LeService.builder()
@@ -168,6 +172,13 @@ public class ClassService {
         pro.setNombreService(numPro+1);
         projectRepository.save(pro);
 
+         var listLicenceService = licenceRepository.findAll(Sort.by(idService));
+
+        for (Licence projet2 : listLicenceService) {
+            projet2.setStatus(StatusLicence.ACTIF);
+            licenceRepository.save(projet2);
+        }
+
         service.setStatusService(StatusService.DISPONIBLE);
 
         serviceRepository.save(service);
@@ -182,6 +193,13 @@ public class ClassService {
         var numPro = pro.getNombreService();     //.getNombreLicence();
         pro.setNombreService(numPro-1);
         projectRepository.save(pro);
+
+        var listLicenceService = licenceRepository.findAll(Sort.by(idService));
+
+        for (Licence projet2 : listLicenceService) {
+            projet2.setStatus(StatusLicence.NONACTIF);
+            licenceRepository.save(projet2);
+        }
 
         service.setStatusService(StatusService.NONDISPONIBLE);
         serviceRepository.save(service);
