@@ -16,12 +16,14 @@ import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.payloads.CreerLicencePayload;
 import com.quantechs.Licences.payloads.CreerProjetPayload;
 import com.quantechs.Licences.repositories.ProjetRepository;
+//import com.quantechs.Licences.repositories.ServiceRepository;
 
 @Service
 public class ProjetService {
     @Autowired 
 
     private ProjetRepository projetRepository;
+    //private ServiceRepository serviceRepository;
 
         public Projet creerProjet(CreerProjetPayload creerProjetPayload){
         Projet projet = Projet.builder()
@@ -34,6 +36,8 @@ public class ProjetService {
         projet.setStatusProjet(StatusProjet.ENCOURS);
         projetRepository.save(projet);
         var projetActu = projetRepository.findBycleProjet(projet.getCleProjet());
+
+        
 
         var idProjetActu = projetActu.getIdProjet();
         var hash = idProjetActu.hashCode();
@@ -72,11 +76,33 @@ public class ProjetService {
 
         return projet;
     }*/
-    public Projet changerEtatProjet(String idProjet, StatusProjet statusProjet)
+    /*public Projet changerEtatProjet(String idProjet, StatusProjet statusProjet)
     {
         Projet projet = projetRepository.findByidProjet(idProjet);
 
         projet.setStatusProjet(statusProjet);
+
+        projetRepository.save(projet);
+
+       return projet;
+    }*/
+
+    public Projet activerUnProjet(String idProjet)
+    {
+        Projet projet = projetRepository.findByidProjet(idProjet);
+
+        projet.setStatusProjet(StatusProjet.ENCOURS);
+
+        projetRepository.save(projet);
+
+       return projet;
+    }
+
+    public Projet desactiverUnProjet(String idProjet)
+    {
+        Projet projet = projetRepository.findByidProjet(idProjet);
+
+        projet.setStatusProjet(StatusProjet.TERMINER);
 
         projetRepository.save(projet);
 
@@ -97,7 +123,7 @@ public class ProjetService {
             return projet;
         }
         else{
-            throw new ProjetNonTrouverException("La licence avec pour ID: "+id+" n'a pas été trouvé!");
+            throw new ProjetNonTrouverException("Le Projet avec pour ID: "+id+" n'a pas été trouvé!");
         }
     }
     public void supprimerProjetParId(String id)

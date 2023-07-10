@@ -71,11 +71,11 @@ public class ProjetController {
         return ResponseEntity.ok(projetService.listerTousProjets());
     }
 
-    @PutMapping(value = "changerStatutProjet/{idProjet}")
-    public ResponseEntity<Projet> changerStatus(@PathVariable String idProjet, StatusProjet statusProjet) throws ProjetNonTrouverException
+    @PutMapping(value = "activerProjet/{idProjet}")
+    public ResponseEntity<Projet> activerStatus(@PathVariable String idProjet, StatusProjet statusProjet) throws ProjetNonTrouverException
     {
 
-        var res = projetService.changerEtatProjet(idProjet, statusProjet);
+        var res = projetService.activerUnProjet(idProjet);
 
         //var pro = projetService.rechercherUnProjetParId(idProjet);
 
@@ -83,6 +83,20 @@ public class ProjetController {
 
          return new ResponseEntity<Projet>(res, HttpStatus.ACCEPTED);
     }
+
+    @PutMapping(value = "desactiverProjet/{idProjet}")
+    public ResponseEntity<Projet> desactiverStatus(@PathVariable String idProjet, StatusProjet statusProjet) throws ProjetNonTrouverException
+    {
+
+        var res = projetService.desactiverUnProjet(idProjet);
+
+        //var pro = projetService.rechercherUnProjetParId(idProjet);
+
+         //pro.setStatusProjet(statusProjet);
+
+         return new ResponseEntity<Projet>(res, HttpStatus.ACCEPTED);
+    }
+
 
     @GetMapping(value = "/rechercher/{idProjet}")
     public ResponseEntity<Projet> rechercherUnProjetParId(@PathVariable String idProjet) throws ProjetNonTrouverException

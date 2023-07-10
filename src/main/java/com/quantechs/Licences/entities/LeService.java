@@ -36,7 +36,7 @@ public class LeService {
     private StatusService statusService;
     private String URLLogo;
     private String responsable;
-    private int nombreLicence;
+    private long nombreLicence;
     private String cleService;
 
 }

@@ -9,11 +9,14 @@ import org.springframework.stereotype.Service;
 
 //import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.LeService;
+//import com.quantechs.Licences.entities.Projet;
+//import com.quantechs.Licences.enumeration.StatusProjet;
 //import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.enumeration.StatusService;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 import com.quantechs.Licences.payloads.CreerServicePayload;
+//import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.repositories.ProjetRepository;
 import com.quantechs.Licences.repositories.ServiceRepository;
 
@@ -27,6 +30,7 @@ public class ClassService {
 
     private ProjetRepository projectRepository;
     private final ServiceRepository serviceRepository;
+    //private LicenceRepository licenceRepository;
 
     public LeService creerService(@Valid CreerServicePayload creerServicePayload) throws ProjetNonTrouverException{
         LeService service = LeService.builder()
@@ -35,9 +39,14 @@ public class ClassService {
         .description(creerServicePayload.getDescription())
         .prix(creerServicePayload.getPrix())
         .URLLogo(creerServicePayload.getURLLogo())
-        .responsable(creerServicePayload.getResponsable())
-        .nombreLicence(creerServicePayload.getNombreLicence()).build();
+        .responsable(creerServicePayload.getResponsable()).build();
+        //.nombreLicence(creerServicePayload.getNombreLicence())
         //affecterIdProjet(idProjet, service);
+
+        var pro = projectRepository.findByidProjet(creerServicePayload.getIdProjet());
+        var numPro = pro.getNombreService();     //.getNombreLicence();
+        pro.setNombreService(numPro+1);
+        projectRepository.save(pro);
 
         boolean verification = projectRepository.existsById(creerServicePayload.getIdProjet());     
 
@@ -84,15 +93,20 @@ public class ClassService {
     
     public List<LeService> listerService() //Permet de retouner une Liste de toutes les licences
     {                                    //qui sont dans le repository de licence
+        
         return serviceRepository.findAll();
     }
 
     public LeService rechercheUnServiceParId(String idService) throws ServiceNonTrouverException
     {
         LeService service = serviceRepository.findByidService(idService);
+        
 
         if(service!=null)
         {
+            //var numLicence = licenceRepository.findByidService(idService);
+            //service.setNombreLicence(numLicence);
+
             return service;
         }
         else{
@@ -114,7 +128,7 @@ public class ClassService {
         service.setPrix(creerServicePayload.getPrix());
         service.setURLLogo(creerServicePayload.getURLLogo());
         service.setResponsable(creerServicePayload.getResponsable());
-        service.setNombreLicence(creerServicePayload.getNombreLicence());
+        //service.setNombreLicence(creerServicePayload.getNombreLicence());
         //service.setIdProjet(creerServicePayload.getIdProjet());
         
         serviceRepository.save(service);
@@ -134,12 +148,42 @@ public class ClassService {
         }
     }
 
-    public LeService changerEtatService(String idService, StatusService statusService) {
+    /*public LeService changerEtatService(String idService, StatusService statusService) {
         
         LeService service = serviceRepository.findByidService(idService);
 
         service.setStatusService(statusService);
 
+        serviceRepository.save(service);
+
+       return service;
+    }*/
+
+        public LeService activerUnService(String idService)
+    {
+        LeService service = serviceRepository.findByidService(idService);
+
+        var pro = projectRepository.findByidProjet(service.getIdProjet());
+        var numPro = pro.getNombreService();     //.getNombreLicence();
+        pro.setNombreService(numPro+1);
+        projectRepository.save(pro);
+
+        service.setStatusService(StatusService.DISPONIBLE);
+
+        serviceRepository.save(service);
+
+       return service;
+    }
+
+    public LeService desactiverUnService(String idService)
+    {
+        LeService service = serviceRepository.findByidService(idService);
+        var pro = projectRepository.findByidProjet(service.getIdProjet());
+        var numPro = pro.getNombreService();     //.getNombreLicence();
+        pro.setNombreService(numPro-1);
+        projectRepository.save(pro);
+
+        service.setStatusService(StatusService.NONDISPONIBLE);
         serviceRepository.save(service);
 
        return service;

@@ -59,6 +59,12 @@ public class LicenceService {
         //.dateExpiration(creerLicencePayload.getDateExpiration())
         //.cleLicence(creerLicencePayload.getCleLicence()).build();
 
+        var serv = serviceRepository.findByidService(creerLicencePayload.getIdService());
+
+        var numSer = serv.getNombreLicence();
+        serv.setNombreLicence(numSer+1);
+        serviceRepository.save(serv);
+
         //var getidService = licence.getIdService();
         boolean verfication = serviceRepository.existsById(creerLicencePayload.getIdService());
         var getidService = licence.getIdService();
@@ -251,6 +257,24 @@ public class LicenceService {
         var endDate = startDate.plusDays(30);
         licence.setDateExpiration(endDate);
 
+        var serv = serviceRepository.findByidService(licence.getIdService());
+        var numSer = serv.getNombreLicence();
+        serv.setNombreLicence(numSer-1);
+        serviceRepository.save(serv);
+
+        var cleLicence = licence.getCleLicence();
+        String[] partieCle = cleLicence.split("-");
+        //int t = partieCle.length;
+        partieCle[4] = "1";
+        String part1 = partieCle[0];
+        String part2 = partieCle[1];
+        String part3 = partieCle[2];
+        String part4 = partieCle[3];
+        String cle = part1+"-"+part2+"-"+part3+"-"+part4+"-"+partieCle[4];
+
+        licence.setCleLicence(cle);
+
+
         licenceRepository.save(licence);
         return licence;
 
@@ -285,13 +309,35 @@ public class LicenceService {
         
         var licenceService = serviceRepository.findByidService(licence.getIdService());
         licenceService.setStatusService(StatusService.NONDISPONIBLE);
+        serviceRepository.save(licenceService);
 
         var projetService = projetRepository.findByidProjet(licence.getIdProjet());
         projetService.setStatusProjet(StatusProjet.TERMINER);
+        projetRepository.save(projetService);
+
+        var cleLicence = licence.getCleLicence();
+        String[] partieCle = cleLicence.split("-");
+        //int t = partieCle.length;
+
+        var serv = serviceRepository.findByidService(licence.getIdService());
+
+        var numSer = serv.getNombreLicence();
+        serv.setNombreLicence(numSer-1);
+        serviceRepository.save(serv);
+
+        String part1 = partieCle[0];
+        String part2 = partieCle[1];
+        String part3 = partieCle[2];
+        String part4 = partieCle[3];
+        partieCle[4] = "0";
+        String cle = part1+"-"+part2+"-"+part3+"-"+part4+"-"+partieCle[4];
+
+        licence.setCleLicence(cle);
 
         licence.setStatus(StatusLicence.NONACTIF);
         licenceRepository.save(licence);
         return licence;
+
 
         //StatusLicence status = StatusLicence.NONACTIF;
         /*if(rechercheUneLicenceParId(idLicence)!=null)

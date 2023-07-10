@@ -17,6 +17,8 @@ public interface LicenceRepository extends MongoRepository<Licence, String>{
 
     Licence findBycleLicence(String cleLicence);
 
+    Licence findByidService(String idService);
+
     Page<Licence> findBynomService(Pageable pageable);
 
     /*List<Licence> findBynomService(String nomService);

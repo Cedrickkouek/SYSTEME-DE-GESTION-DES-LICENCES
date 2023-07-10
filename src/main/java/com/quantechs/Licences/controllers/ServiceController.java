@@ -19,7 +19,7 @@ import com.quantechs.Licences.entities.LeService;
 //import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.enumeration.StatusProjet;
-import com.quantechs.Licences.enumeration.StatusService;
+//import com.quantechs.Licences.enumeration.StatusService;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.enumeration.StatusLicence;
@@ -72,12 +72,26 @@ public class ServiceController {
         return ResponseEntity.ok(classService.verifierServiceParCle(cleService));
     }
 
-    @PutMapping(value = "changerStatutService/{idService}")
+    /*@PutMapping(value = "changerStatutService/{idService}")
     public ResponseEntity<LeService> changerStatus(@PathVariable String idService, StatusService statusService) throws ServiceNonTrouverException
     {
 
         var res = classService.changerEtatService(idService, statusService);
 
+        return new ResponseEntity<LeService>(res, HttpStatus.ACCEPTED);
+    }*/
+
+    @PutMapping(value = "activerService/{idService}")
+    public ResponseEntity<LeService> activerService(@PathVariable String idService) throws ServiceNonTrouverException
+    {
+        var res = classService.activerUnService(idService);
+        return new ResponseEntity<LeService>(res, HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping(value = "desactiverService/{idService}")
+    public ResponseEntity<LeService> desactiverService(@PathVariable String idService) throws ServiceNonTrouverException
+    {
+        var res = classService.desactiverUnService(idService);
         return new ResponseEntity<LeService>(res, HttpStatus.ACCEPTED);
     }
 
@@ -91,7 +105,7 @@ public class ServiceController {
         serviceMisAjour.setPrix(creerServicePayload.getPrix());
         serviceMisAjour.setURLLogo(creerServicePayload.getURLLogo());
         serviceMisAjour.setResponsable(creerServicePayload.getResponsable());
-        serviceMisAjour.setNombreLicence(creerServicePayload.getNombreLicence());
+        //serviceMisAjour.setNombreLicence(creerServicePayload.getNombreLicence());
         //serviceMisAjour.setIdProjet(creerServicePayload.getIdProjet());
 
         serviceRepository.save(serviceMisAjour);
