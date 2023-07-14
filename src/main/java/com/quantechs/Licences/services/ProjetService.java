@@ -1,5 +1,6 @@
 package com.quantechs.Licences.services;
 
+//import java.time.temporal.ChronoUnit;
 import java.util.List;
 //import java.util.UUID;
 
@@ -26,13 +27,16 @@ import com.quantechs.Licences.repositories.ProjetRepository;
 //import com.quantechs.Licences.repositories.ServiceRepository;
 import com.quantechs.Licences.repositories.ServiceRepository;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class ProjetService {
     @Autowired 
 
     private ProjetRepository projetRepository;
-    private LicenceRepository licenceRepository;
-    private ServiceRepository serviceRepository;
+    private final LicenceRepository licenceRepository;
+    private final ServiceRepository serviceRepository;
 
         public Projet creerProjet(CreerProjetPayload creerProjetPayload){
         Projet projet = Projet.builder()
@@ -60,6 +64,7 @@ public class ProjetService {
         {
             etatP = "0";
         }
+
 
         String cle = idProjetActu+"-"+hash+"-"+etatP;
         projet.setCleProjet(cle);
@@ -164,10 +169,10 @@ public class ProjetService {
             throw new ProjetNonTrouverException("Le Projet avec pour ID: "+id+" n'a pas été trouvé!");
         }
     }
-    public void supprimerProjetParId(String id)
+    /*public void supprimerProjetParId(String id)
     {
          projetRepository.deleteById(id);
-    }
+    }*/
 
     public void supprimerToutProjet() {
         projetRepository.deleteAll();

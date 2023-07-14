@@ -31,7 +31,7 @@ public class LeService {
     private String IdProjet;
     private String nomService;
     private String description;
-    private String validation;
+    //private String validation;
     private float prix;
     private StatusService statusService;
     private String URLLogo;

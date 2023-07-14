@@ -47,6 +47,8 @@ public class ClassService {
         //.nombreLicence(creerServicePayload.getNombreLicence())
         //affecterIdProjet(idProjet, service);
 
+        service.setNombreLicence(0);
+
         var pro = projectRepository.findByidProjet(creerServicePayload.getIdProjet());
         var numPro = pro.getNombreService();     //.getNombreLicence();
         pro.setNombreService(numPro+1);
@@ -82,6 +84,8 @@ public class ClassService {
             etatS = "0";
         }
 
+        
+
         String cle = idService+"-"+idServiceProjet+"-"+hash+"-"+etatS;
         service.setCleService(cle);
         serviceRepository.save(service);
@@ -94,6 +98,9 @@ public class ClassService {
 
         return service;
     }
+    /*public void supprimerToutService() {
+            serviceRepository.deleteAll();
+        }*/
     
     public List<LeService> listerService() //Permet de retouner une Liste de toutes les licences
     {                                    //qui sont dans le repository de licence
@@ -118,11 +125,11 @@ public class ClassService {
         }
     }
 
-    public void supprimerServiceParId(String idService) {
+    /*  public void supprimerServiceParId(String idService) {
         
          serviceRepository.deleteById(idService);
     
-    }
+    }*/
 
     public LeService modifierService(String idService, CreerServicePayload creerServicePayload) /*throws LicenceNonTrouverException*/
     {

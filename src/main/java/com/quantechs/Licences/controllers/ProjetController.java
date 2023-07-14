@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
+//import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -104,22 +104,21 @@ public class ProjetController {
         return ResponseEntity.ok(projetService.rechercherUnProjetParId(idProjet));
     }
 
-    @DeleteMapping(value = "/supprimer/{idProjet}")
+    /*@DeleteMapping(value = "/supprimer/{idProjet}")
     public String supprimerUneLicenceParId(@PathVariable String idProjet)
     {
         projetService.supprimerProjetParId(idProjet);
         String msg = "Le Projet avec pour ID: "+idProjet+" a été supprimée avec succès \u2705";
         return msg;
-    }
+    }*/
 
     
-    @DeleteMapping(value = "/supprimerLesProjets")
+    /*@DeleteMapping(value = "/supprimerLesProjets")
     public void superToutProjet()
     {
         projetService.supprimerToutProjet();
-    }
+    }*/
 
-    
 
     /*@GetMapping(value = "/{nomProjet}")
     public ResponseEntity<List<Projet>> rechercherParNomProjet(@RequestBody @PathVariable String nomProjet)

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
+//import org.springframework.web.bind.annotation.DeleteMapping;
 //import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,13 +58,13 @@ public class ServiceController {
         return ResponseEntity.ok(classService.rechercheUnServiceParId(idService));    
     }
 
-    @DeleteMapping(value = "/{idService}")
+   /*  @DeleteMapping(value = "/{idService}")
     public String supprimerServiceParId(@PathVariable String idService)
-    {
+   {
         classService.supprimerServiceParId(idService);
         String msg = "La Licence avec pour ID: "+idService+" a été supprimée avec succès \u2705";
         return msg;
-    }
+    } */
 
     @GetMapping(value = "/verification/{cleService}")
     public ResponseEntity<LeService> verificationProjetParCle(@PathVariable UUID cleService) throws ServiceNonTrouverException
@@ -114,11 +114,11 @@ public class ServiceController {
         
     }
 
-    @DeleteMapping(value = "/supprimerLesService")
+    /*@DeleteMapping(value = "/supprimerLesService")
     public void superToutProjet()
     {
         classService.supprimerToutService();
-    }
+    }*/
 
     /*@GetMapping(value = "/{nomService}")
     public ResponseEntity<List<Licence>> rechercherParNomLicence(@PathVariable String nomService)
