@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 //import com.quantechs.Licences.entities.Licence;
@@ -31,18 +32,18 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-//@RequestMapping(value = "/projet")
+@RequestMapping(value = "/projet")
 public class ProjetController {
     private final ProjetService projetService;
     private ProjetRepository projetRepository;
 
-    @PostMapping(value = "/projet/creerprojet")
+    @PostMapping(value = "/creerprojet")
     public ResponseEntity<Projet> creerProjet(@Valid @RequestBody CreerProjetPayload creerProjetPayload){
         var yes = projetService.creerProjet(creerProjetPayload);
         return new ResponseEntity<Projet>(yes,HttpStatus.OK);
     }
 
-    @PutMapping(value = "modifier/{idProjet}")
+    @PutMapping(value = "/modifier/{idProjet}")
     public ResponseEntity<Projet> modifierProjet(@Valid @PathVariable("idProjet") String idProjet, @RequestBody CreerProjetPayload creerProjetPayload){
        
         Projet projetMisAjour = projetRepository.findByidProjet(idProjet);
@@ -65,13 +66,13 @@ public class ProjetController {
         return ResponseEntity.ok(projetService.verifierProjetParCle(cleProjet));
     }
 
-    @GetMapping(value = "/projet/listerprojets")
+    @GetMapping(value = "/listerprojets")
     public ResponseEntity<List<Projet>> listerProjets()
     {
         return ResponseEntity.ok(projetService.listerTousProjets());
     }
 
-    @PutMapping(value = "activerProjet/{idProjet}")
+    @PutMapping(value = "/activerProjet/{idProjet}")
     public ResponseEntity<Projet> activerStatus(@PathVariable String idProjet, StatusProjet statusProjet) throws ProjetNonTrouverException
     {
 
@@ -84,7 +85,7 @@ public class ProjetController {
          return new ResponseEntity<Projet>(res, HttpStatus.ACCEPTED);
     }
 
-    @PutMapping(value = "desactiverProjet/{idProjet}")
+    @PutMapping(value = "/desactiverProjet/{idProjet}")
     public ResponseEntity<Projet> desactiverStatus(@PathVariable String idProjet, StatusProjet statusProjet) throws ProjetNonTrouverException
     {
 

@@ -18,6 +18,8 @@ import java.util.List;
 public interface LicenceRepository extends MongoRepository<Licence, String>{
     Licence findByidLicence(String idLicence);
 
+    Page<Licence> findAllByIdService(String IdService, Pageable pageable);
+
     Licence findBycleLicence(String cleLicence);
 
     Licence findByidService(String idService);
