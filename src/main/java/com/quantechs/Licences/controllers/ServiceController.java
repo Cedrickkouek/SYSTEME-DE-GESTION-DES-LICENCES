@@ -24,8 +24,7 @@ import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
-//import com.quantechs.Licences.payloads.CreerProjetPayload;
-import com.quantechs.Licences.payloads.CreerServicePayload;
+import com.quantechs.Licences.payloads.in.CreerServicePayload;
 import com.quantechs.Licences.services.ClassService;
 import com.quantechs.Licences.repositories.ServiceRepository;
 

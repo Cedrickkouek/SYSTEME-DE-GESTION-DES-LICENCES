@@ -1,4 +1,4 @@
-package com.quantechs.Licences.payloads;
+package com.quantechs.Licences.payloads.in;
 
 import org.hibernate.validator.constraints.URL;
 import org.springframework.format.annotation.NumberFormat;

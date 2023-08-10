@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 //import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.entities.Projet;
 import com.quantechs.Licences.enumeration.StatusProjet;
+import com.quantechs.Licences.exceptions.EnumerationNotFoundException;
+import com.quantechs.Licences.exceptions.PaiementNonValideException;
 //import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 //import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
-//import com.quantechs.Licences.enumeration.StatusProjet;
-import com.quantechs.Licences.payloads.CreerProjetPayload;
+import com.quantechs.Licences.payloads.in.CreerProjetPayload;
 import com.quantechs.Licences.repositories.ProjetRepository;
 import com.quantechs.Licences.services.ProjetService;
 
@@ -37,9 +38,9 @@ public class ProjetController {
     private final ProjetService projetService;
     private ProjetRepository projetRepository;
 
-    @PostMapping(value = "/creerprojet")
-    public ResponseEntity<Projet> creerProjet(@Valid @RequestBody CreerProjetPayload creerProjetPayload){
-        var yes = projetService.creerProjet(creerProjetPayload);
+    @PostMapping(value = "/creerprojet/{idPaimentApi}")
+    public ResponseEntity<Projet> creerProjet(@Valid @PathVariable("idPaimentApi") String idPaiementApi, @RequestBody CreerProjetPayload creerProjetPayload) throws PaiementNonValideException, EnumerationNotFoundException{
+        var yes = projetService.creerProjet(idPaiementApi, creerProjetPayload);
         return new ResponseEntity<Projet>(yes,HttpStatus.OK);
     }
 
@@ -75,7 +76,6 @@ public class ProjetController {
     @PutMapping(value = "/activerProjet/{idProjet}")
     public ResponseEntity<Projet> activerStatus(@PathVariable String idProjet, StatusProjet statusProjet) throws ProjetNonTrouverException
     {
-
         var res = projetService.activerUnProjet(idProjet);
 
         //var pro = projetService.rechercherUnProjetParId(idProjet);
@@ -88,16 +88,12 @@ public class ProjetController {
     @PutMapping(value = "/desactiverProjet/{idProjet}")
     public ResponseEntity<Projet> desactiverStatus(@PathVariable String idProjet, StatusProjet statusProjet) throws ProjetNonTrouverException
     {
-
         var res = projetService.desactiverUnProjet(idProjet);
 
         //var pro = projetService.rechercherUnProjetParId(idProjet);
-
          //pro.setStatusProjet(statusProjet);
-
          return new ResponseEntity<Projet>(res, HttpStatus.ACCEPTED);
     }
-
 
     @GetMapping(value = "/rechercher/{idProjet}")
     public ResponseEntity<Projet> rechercherUnProjetParId(@PathVariable String idProjet) throws ProjetNonTrouverException

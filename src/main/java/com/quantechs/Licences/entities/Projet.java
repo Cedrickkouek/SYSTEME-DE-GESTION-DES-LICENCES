@@ -23,7 +23,8 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Projet {
     @Id
-    private String idProjet;    
+    private String idProjet;
+    private String idPaimentApi;    
     private String nomProjet;
     private String description;
     private StatusProjet statusProjet;

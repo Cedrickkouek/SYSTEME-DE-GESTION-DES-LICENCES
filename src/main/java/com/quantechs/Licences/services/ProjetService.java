@@ -18,14 +18,15 @@ import com.quantechs.Licences.entities.Projet;
 import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.enumeration.StatusProjet;
 import com.quantechs.Licences.enumeration.StatusService;
+import com.quantechs.Licences.exceptions.PaiementNonValideException;
 //import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
-//import com.quantechs.Licences.payloads.CreerLicencePayload;
-import com.quantechs.Licences.payloads.CreerProjetPayload;
+import com.quantechs.Licences.payloads.in.CreerProjetPayload;
 import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.repositories.ProjetRepository;
 //import com.quantechs.Licences.repositories.ServiceRepository;
 import com.quantechs.Licences.repositories.ServiceRepository;
+
 
 import lombok.AllArgsConstructor;
 
@@ -38,43 +39,65 @@ public class ProjetService {
     private final LicenceRepository licenceRepository;
     private final ServiceRepository serviceRepository;
 
-        public Projet creerProjet(CreerProjetPayload creerProjetPayload){
-        Projet projet = Projet.builder()
-        .nomProjet(creerProjetPayload.getNomProjet())
-        .description(creerProjetPayload.getDescription())    
-        .nomDirecteurProjet(creerProjetPayload.getNomDirecteurProjet())
-        .dateCreation(creerProjetPayload.getDateCreation())
-        .urlLOgo(creerProjetPayload.getUrlLOgo()).build();
-        projet.setStatusProjet(StatusProjet.ENCOURS);
-        projetRepository.save(projet);
-        var projetActu = projetRepository.findBycleProjet(projet.getCleProjet());
+        public Projet creerProjet(String idPaiementApi, CreerProjetPayload creerProjetPayload) throws PaiementNonValideException {
+        
+        boolean verificationPaiement = verifierPaiementParId(idPaiementApi);
 
-        projet.setNombreService(0);
+        if(verificationPaiement)
+        {
+            Projet projet = Projet.builder()
+            .idPaimentApi(idPaiementApi)
+            .nomProjet(creerProjetPayload.getNomProjet())
+            .description(creerProjetPayload.getDescription())    
+            .nomDirecteurProjet(creerProjetPayload.getNomDirecteurProjet())
+            .dateCreation(creerProjetPayload.getDateCreation())
+            .urlLOgo(creerProjetPayload.getUrlLOgo()).build();
+            projet.setStatusProjet(StatusProjet.ENCOURS);
+            projetRepository.save(projet);
+            var projetActu = projetRepository.findBycleProjet(projet.getCleProjet());
+
+            projet.setIdPaimentApi(idPaiementApi);
+
+            projet.setNombreService(0);
         
 
-        var idProjetActu = projetActu.getIdProjet();
-        var hash = idProjetActu.hashCode();
+            var idProjetActu = projetActu.getIdProjet();
+            var hash = idProjetActu.hashCode();
 
-        String etatP;
-        if(projetActu.getStatusProjet()==StatusProjet.ENCOURS)
-        {
-            etatP = "1";
-        }
-        else
-        {
-            etatP = "0";
-        }
+            String etatP;
+            if(projetActu.getStatusProjet()==StatusProjet.ENCOURS)
+            {
+                etatP = "1";
+            }
+            else
+            {
+                etatP = "0";
+            }
 
 
-        String cle = idProjetActu+"-"+hash+"-"+etatP;
-        projet.setCleProjet(cle);
-        projetRepository.save(projet);
+            String cle = idProjetActu+"-"+hash+"-"+etatP;
+            projet.setCleProjet(cle);
+            projetRepository.save(projet);
 
         /*UUID uuid = Generators.timeBasedGenerator().generate();
         projet.setCleProjet(uuid);*/
 
-        projetRepository.save(projet);
-        return projet;
+            projetRepository.save(projet);
+            return projet;
+        }
+        else
+        {
+            throw new PaiementNonValideException("Le paiement avec pour id "+idPaiementApi+" n'est pas valide, ce projet ne peut pas étre créer! \u274C");
+        }
+
+    }
+
+    public Boolean verifierPaiementParId(String idPaiementApi)
+    {
+        /*final String URL =  "http://127.0.0.1:8100/paiements/";
+        WebClient client = WebClient.create(URL);
+        Boolean reponse =*/
+        return true;
     }
 
     //public Projet modifierProjet(String idProjet, CreerProjetPayload creerProjetPayload) /*throws LicenceNonTrouverException*/

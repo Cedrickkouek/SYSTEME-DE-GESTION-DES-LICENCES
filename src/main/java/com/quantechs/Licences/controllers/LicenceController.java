@@ -20,14 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.entities.Projet;
 import com.quantechs.Licences.enumeration.StatusLicence;
+import com.quantechs.Licences.exceptions.EnumerationNotFoundException;
 //import com.quantechs.Licences.enumeration.StatusProjet;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
+import com.quantechs.Licences.exceptions.PaiementNonEffectueException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
-//import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
-import com.quantechs.Licences.payloads.CreerLicencePayload;
+import com.quantechs.Licences.payloads.in.CreerLicencePayload;
 import com.quantechs.Licences.services.LicenceService;
 
 import jakarta.validation.Valid;
@@ -42,9 +43,9 @@ public class LicenceController {
     private final LicenceService licenceService;
     //private final StatusLicence status;
 
-    @PostMapping(value = "/creerlicence")
-    public ResponseEntity<Licence> creerLicence( @Valid @RequestBody CreerLicencePayload CreerLicencePayload) throws ServiceNonTrouverException{
-        var res = licenceService.creerLicence(CreerLicencePayload);
+    @PostMapping(value = "/Acheterlicence")
+    public ResponseEntity<Licence> AcheterLicence( @Valid @RequestBody CreerLicencePayload CreerLicencePayload) throws ServiceNonTrouverException, EnumerationNotFoundException, PaiementNonEffectueException{
+        var res = licenceService.AcheterLicence(CreerLicencePayload);
         return new ResponseEntity<Licence>(res,HttpStatus.OK);
     }
 

@@ -1,4 +1,4 @@
-package com.quantechs.Licences.payloads;
+package com.quantechs.Licences.payloads.in;
 
 import java.time.LocalDate;
 //import java.util.UUID;

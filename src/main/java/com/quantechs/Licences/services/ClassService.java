@@ -1,6 +1,8 @@
 package com.quantechs.Licences.services;
 
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +20,7 @@ import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.enumeration.StatusService;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
-import com.quantechs.Licences.payloads.CreerServicePayload;
+import com.quantechs.Licences.payloads.in.CreerServicePayload;
 import com.quantechs.Licences.repositories.LicenceRepository;
 //import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.repositories.ProjetRepository;
@@ -32,13 +34,13 @@ import lombok.AllArgsConstructor;
 public class ClassService {
     @Autowired
 
-    private ProjetRepository projectRepository;
+    private final ProjetRepository projectRepository;
     private final ServiceRepository serviceRepository;
-    private LicenceRepository licenceRepository;
+    private final LicenceRepository licenceRepository;
 
     public LeService creerService(@Valid CreerServicePayload creerServicePayload) throws ProjetNonTrouverException{
         LeService service = LeService.builder()
-        .IdProjet(creerServicePayload.getIdProjet())
+        .idProjet(creerServicePayload.getIdProjet())
         .nomService(creerServicePayload.getNomService())
         .description(creerServicePayload.getDescription())
         .prix(creerServicePayload.getPrix())
@@ -66,7 +68,8 @@ public class ClassService {
             throw new ProjetNonTrouverException("L'ID du Projet: "+getidProjet+" n'a pas été trouvé \u274C!");
         }
         service.setStatusService(StatusService.DISPONIBLE);
-
+        LocalDate now = LocalDate.now();
+        service.setDateCreation(now);
          
         serviceRepository.save(service);
 
@@ -83,8 +86,6 @@ public class ClassService {
         else{
             etatS = "0";
         }
-
-        
 
         String cle = idService+"-"+idServiceProjet+"-"+hash+"-"+etatS;
         service.setCleService(cle);
@@ -170,7 +171,7 @@ public class ClassService {
        return service;
     }*/
 
-        public LeService activerUnService(String idService)
+    public LeService activerUnService(String idService)
     {
         LeService service = serviceRepository.findByidService(idService);
 
@@ -186,7 +187,27 @@ public class ClassService {
             licenceRepository.save(projet2);
         }
 
+        var projet = projectRepository.findById(service.getIdProjet()).get();
+        var numSerDansProjet = projet.getNombreService();
+        projet.setNombreService(numSerDansProjet+1);
+        projectRepository.save(projet);
+
+        var cleService = service.getCleService();
+        String[] partieCleService = cleService.split("-");
+        partieCleService[3] = "1";
+        String part1 = partieCleService[0];
+        String part2 = partieCleService[1];
+        String part3 = partieCleService[2];
+        String part4 = partieCleService[3];
+        String cle = part1+"-"+part2+"-"+part3+"-"+part4;
+
+        service.setCleService(cle);
+
         service.setStatusService(StatusService.DISPONIBLE);
+
+        LocalDate now = LocalDate.now();
+        service.setDateCreation(now);
+
 
         serviceRepository.save(service);
 
@@ -207,6 +228,21 @@ public class ClassService {
             projet2.setStatus(StatusLicence.NONACTIF);
             licenceRepository.save(projet2);
         }
+
+        var cleService = service.getCleService();
+        String[] partieCleService = cleService.split("-");
+        partieCleService[3] = "0";
+        String part1 = partieCleService[0];
+        String part2 = partieCleService[1];
+        String part3 = partieCleService[2];
+        String part4 = partieCleService[3];
+        String cle = part1+"-"+part2+"-"+part3+"-"+part4;
+
+        service.setCleService(cle);
+
+        String dateNull = "0000-00-00";
+        LocalDate localDate = convertStringToLocalDate(dateNull);
+        service.setDateCreation(localDate);
 
         service.setStatusService(StatusService.NONDISPONIBLE);
         serviceRepository.save(service);
@@ -229,13 +265,11 @@ public class ClassService {
         }
 
     }
-    /*public List<LeService> rechercheUnServiceParNom(String nom)
-    {
-        return serviceRepository.findBynomService(nom);
-    }*/
 
-    /*public List<LeService> rechercheParStatus(StatusService status)
-    {
-        return erviceRepository.findByStatus(status);
-    }*/
+     public static LocalDate convertStringToLocalDate(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateString, formatter);
+    }
+
+
 }

@@ -41,8 +41,10 @@ public class Licence {
     private LocalDate dateAchat;
     private String idUtilisateur;
     private String nomUtilisateur;
+    private String paiementKey;
     private StatusLicence status;
     private double prix;
+    private String paiementUrl;
     private String idPaiement;
     private LocalDate dateExpiration;
     private String validite;

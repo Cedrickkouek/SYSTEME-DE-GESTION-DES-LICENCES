@@ -1,5 +1,7 @@
 package com.quantechs.Licences.entities;
 
+import java.time.LocalDate;
+
 //import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -28,9 +30,10 @@ import lombok.NoArgsConstructor;
 public class LeService {
     @Id
     private String idService;
-    private String IdProjet;
+    private String idProjet;
     private String nomService;
     private String description;
+    private String idPaimentProjet;
     //private String validation;
     private float prix;
     private StatusService statusService;
@@ -38,5 +41,6 @@ public class LeService {
     private String responsable;
     private long nombreLicence;
     private String cleService;
+    private LocalDate dateCreation;
 
 }

@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.quantechs.Licences.exceptions.EnumerationNotFoundException;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
+import com.quantechs.Licences.exceptions.PaiementNonEffectueException;
+import com.quantechs.Licences.exceptions.PaiementNonValideException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 
@@ -34,6 +37,15 @@ public class ApplicationExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(LicenceNonTrouverException.class)
     public Map<String, String> gererExceptionsDesLicences(LicenceNonTrouverException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Message D'erreur", excep.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(PaiementNonValideException.class)
+    public Map<String, String> gererValiditePaiement(PaiementNonValideException excep)
     {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("Message D'erreur", excep.getMessage());
@@ -67,6 +79,15 @@ public class ApplicationExceptionHandler {
         return errorMap;
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(PaiementNonEffectueException.class)
+    public Map<String, String> gererLesPaiementsDansLicence(PaiementNonEffectueException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Message D'erreur", excep.getMessage());
+        return errorMap;
+    }
+    
     @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Map<String, String> valeurNonConforme(HttpMessageNotReadableException excep)
@@ -93,4 +114,14 @@ public class ApplicationExceptionHandler {
         errorMap.put("\u274C Conversion des champs vers d'autres type impossible, verifier les champs et reessayer! \u274C ", excep.getLocalizedMessage());
         return errorMap;
     }
+
+    @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+    @ExceptionHandler(EnumerationNotFoundException.class)
+    public Map<String, String> enumerationException(EnumerationNotFoundException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("\u274C Message D'erreur \u274C ", excep.getLocalizedMessage());
+        return errorMap;
+    }
+    
 }
