@@ -1,5 +1,6 @@
 package com.quantechs.Licences.advice;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,12 +13,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.quantechs.Licences.exceptions.ActivationLicencePaiementException;
+import com.quantechs.Licences.exceptions.ActivationProjetPaiementException;
+import com.quantechs.Licences.exceptions.CreerIdPaiementException;
 import com.quantechs.Licences.exceptions.EnumerationNotFoundException;
+import com.quantechs.Licences.exceptions.LicenceNonCreerException;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.PaiementNonEffectueException;
 import com.quantechs.Licences.exceptions.PaiementNonValideException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
+import com.quantechs.Licences.exceptions.VerificationPaiementKeyException;
 
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
@@ -42,6 +48,16 @@ public class ApplicationExceptionHandler {
         errorMap.put("Message D'erreur", excep.getMessage());
         return errorMap;
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ActivationProjetPaiementException.class)
+    public Map<String, String> gererExceptionsDesLicences(ActivationProjetPaiementException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Message D'erreur", excep.getMessage());
+        return errorMap;
+    }
+
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(PaiementNonValideException.class)
@@ -87,13 +103,60 @@ public class ApplicationExceptionHandler {
         errorMap.put("Message D'erreur", excep.getMessage());
         return errorMap;
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(LicenceNonCreerException.class)
+    public Map<String, String> gererLicenceNonCreer(LicenceNonCreerException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Message D'erreur", excep.getMessage());
+        return errorMap;
+    }
     
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ActivationLicencePaiementException.class)
+    public Map<String, String> gererActivationProjetPaiement(ActivationLicencePaiementException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Message D'erreur", excep.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(VerificationPaiementKeyException.class)
+    public Map<String, String> verificationPaiementKeyException(VerificationPaiementKeyException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Message D'erreur", excep.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(CreerIdPaiementException.class)
+    public Map<String, String> creerIdPaiementException(CreerIdPaiementException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Message D'erreur", excep.getMessage());
+        return errorMap;
+    }
+
+    
+
     @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Map<String, String> valeurNonConforme(HttpMessageNotReadableException excep)
     {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("\u274C Format d'entrée non valid, verifier les champs et reessayer! \u274C ", excep.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(NoSuchAlgorithmException.class)
+    public Map<String, String> algorithmeException(NoSuchAlgorithmException excep)
+    {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Message D'erreur", excep.getMessage());
         return errorMap;
     }
 

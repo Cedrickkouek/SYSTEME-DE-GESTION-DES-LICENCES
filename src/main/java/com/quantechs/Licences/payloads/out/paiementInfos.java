@@ -27,4 +27,5 @@ public class paiementInfos {
     private String paymentUrl;
     private String numero_payeur;
     private String indicatifPay;
+
 }

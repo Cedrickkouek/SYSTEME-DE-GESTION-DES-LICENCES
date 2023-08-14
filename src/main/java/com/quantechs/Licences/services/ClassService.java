@@ -1,6 +1,8 @@
 package com.quantechs.Licences.services;
 
 
+import java.io.StringReader;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -10,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonObject;
+import com.google.gson.internal.Streams;
+import com.google.gson.stream.JsonReader;
+import com.quantechs.Licences.Utils.HashGenerator;
 //import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.LeService;
 import com.quantechs.Licences.entities.Licence;
@@ -18,13 +24,18 @@ import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.enumeration.StatusProjet;
 //import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.enumeration.StatusService;
+import com.quantechs.Licences.exceptions.ActivationProjetPaiementException;
+import com.quantechs.Licences.exceptions.CreerIdPaiementException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
+import com.quantechs.Licences.payloads.in.ActivateDeactivatePayload;
+import com.quantechs.Licences.payloads.in.CreerIdPaiementProjetPayload;
 import com.quantechs.Licences.payloads.in.CreerServicePayload;
 import com.quantechs.Licences.repositories.LicenceRepository;
 //import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.repositories.ProjetRepository;
 import com.quantechs.Licences.repositories.ServiceRepository;
+import com.quantechs.Licences.payloads.out.projetInfos;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -33,21 +44,56 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ClassService {
     @Autowired
-
+    private final CommunicationUtils communicationUtils;
     private final ProjetRepository projectRepository;
     private final ServiceRepository serviceRepository;
     private final LicenceRepository licenceRepository;
 
-    public LeService creerService(@Valid CreerServicePayload creerServicePayload) throws ProjetNonTrouverException{
+    public LeService creerService(@Valid CreerServicePayload creerServicePayload) throws ProjetNonTrouverException, CreerIdPaiementException, NoSuchAlgorithmException{
         LeService service = LeService.builder()
         .idProjet(creerServicePayload.getIdProjet())
         .nomService(creerServicePayload.getNomService())
         .description(creerServicePayload.getDescription())
-        .prix(creerServicePayload.getPrix())
+        .montant(creerServicePayload.getMontant())
         .URLLogo(creerServicePayload.getURLLogo())
+        .accronymeService(creerServicePayload.getAccronymeService())
         .responsable(creerServicePayload.getResponsable()).build();
         //.nombreLicence(creerServicePayload.getNombreLicence())
         //affecterIdProjet(idProjet, service);
+        CreerIdPaiementProjetPayload cIpP = CreerIdPaiementProjetPayload.builder()
+        .name(creerServicePayload.getNomService())
+        .siteId(creerServicePayload.getSiteId())
+        .apiKey(creerServicePayload.getApiKey()).build();
+        //.notify_url(creerServicePayload.getNotify_url())
+        //.return_url(creerServicePayload.getReturn_url()).build();
+
+        String responseCreerProjetPaiement = communicationUtils.creerIdPaiementProjet(cIpP);
+        JsonObject jsonObject = Streams.parse(new JsonReader(new StringReader(responseCreerProjetPaiement))).getAsJsonObject();
+        if(jsonObject.get("code").getAsString().equals("200"))
+        {
+            JsonObject data = jsonObject.get("data").getAsJsonObject();
+            projetInfos projetInf = projetInfos.builder()
+            .id(data.get("id").getAsString())
+            .projectName(data.get("projectName").getAsString())
+            .apiKey(data.get("apiKey").getAsString())
+            .channelPayment(data.get("channelPayment").getAsString())
+            //.notify_url(data.get("notify_url").getAsString())
+            .stateProjet(data.get("stateProjet").getAsString())
+            .siteId(data.get("siteId").getAsString())
+            //.return_url(data.get("return_url").getAsString())
+            .build();
+            System.out.println(projetInf);
+
+            if(projetInf.getStateProjet()!="ACTIF")
+            {
+                service.setStatusService(StatusService.NONDISPONIBLE);
+            }
+
+            service.setStatusPaiementProjet(projetInf.getStateProjet());
+            service.setIdPaiementProjet(projetInf.getId());
+            serviceRepository.save(service);
+        }
+
 
         service.setNombreLicence(0);
 
@@ -76,7 +122,8 @@ public class ClassService {
         var serviceActu = serviceRepository.findByidService(service.getIdService());
         var idServiceProjet = serviceActu.getIdProjet();
         var idService = serviceActu.getIdService();
-        var hash = idService.hashCode();
+        //var hash = idService.hashCode();
+        var hash = HashGenerator.generateHash(idServiceProjet);
 
         String etatS;
         if(serviceActu.getStatusService()==StatusService.DISPONIBLE)
@@ -126,9 +173,10 @@ public class ClassService {
         }
     }
 
-    /*  public void supprimerServiceParId(String idService) {
+    /*  
+        public void supprimerServiceParId(String idService) {
         
-         serviceRepository.deleteById(idService);
+        serviceRepository.deleteById(idService);
     
     }*/
 
@@ -137,8 +185,9 @@ public class ClassService {
         LeService service = serviceRepository.findByidService(idService);
         service.setNomService(creerServicePayload.getNomService());
         service.setDescription(creerServicePayload.getDescription());
-        service.setPrix(creerServicePayload.getPrix());
+        service.setMontant(creerServicePayload.getMontant());
         service.setURLLogo(creerServicePayload.getURLLogo());
+        service.setAccronymeService(creerServicePayload.getAccronymeService());
         service.setResponsable(creerServicePayload.getResponsable());
         //service.setNombreLicence(creerServicePayload.getNombreLicence());
         //service.setIdProjet(creerServicePayload.getIdProjet());
@@ -225,7 +274,7 @@ public class ClassService {
         var listLicenceService = licenceRepository.findAll(Sort.by(idService));
 
         for (Licence projet2 : listLicenceService) {
-            projet2.setStatus(StatusLicence.NONACTIF);
+            projet2.setStatus(StatusLicence.NON_ACTIF);
             licenceRepository.save(projet2);
         }
 
@@ -254,6 +303,34 @@ public class ClassService {
         serviceRepository.deleteAll();
     }
 
+    public projetInfos activerProjetPaiement(ActivateDeactivatePayload activateDeactivatePayload) throws ActivationProjetPaiementException
+    {
+        LeService service = serviceRepository.findByIdPaiementProjet(activateDeactivatePayload.getId());
+        String responseProjet = communicationUtils.activerPaimentProjet(activateDeactivatePayload);
+        JsonObject jsonObject = Streams.parse(new JsonReader(new StringReader(responseProjet))).getAsJsonObject();
+        if(jsonObject.get("code").getAsString().equals("200"))
+        {
+            JsonObject data = jsonObject.get("data").getAsJsonObject();
+            projetInfos projetInf = projetInfos.builder()
+            .id(data.get("id").getAsString())
+            .projectName(data.get("projectName").getAsString())
+            .apiKey(data.get("apiKey").getAsString())
+            .channelPayment(data.get("channelPayment").getAsString())
+            .stateProjet(data.get("stateProjet").getAsString())
+            .siteId(data.get("siteId").getAsString()).build();
+            //.return_url(data.get("return_url").getAsString())
+            //.notify_url(data.get("notify_url").getAsString())
+            
+            service.setStatusPaiementProjet(projetInf.getStateProjet());
+            serviceRepository.save(service);
+            return projetInf;
+        }
+        else
+        {
+           throw new ActivationProjetPaiementException("Erreur lors de l'activation de project paiement");
+        }
+    }
+
     public void affecterIdProjet(String idProjet, LeService service)
     {
         boolean verifierProjet = projectRepository.existsById(idProjet);
@@ -265,6 +342,11 @@ public class ClassService {
         }
 
     }
+
+    /*public String genererIdPaiementProjet()
+    {
+
+    } */
 
      public static LocalDate convertStringToLocalDate(String dateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

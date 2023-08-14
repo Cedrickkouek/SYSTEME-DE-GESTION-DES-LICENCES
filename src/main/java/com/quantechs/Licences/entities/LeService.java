@@ -31,16 +31,17 @@ public class LeService {
     @Id
     private String idService;
     private String idProjet;
+    private String idPaiementProjet;
+    private String statusPaiementProjet;
     private String nomService;
     private String description;
-    private String idPaimentProjet;
     //private String validation;
-    private float prix;
+    private int montant;
     private StatusService statusService;
     private String URLLogo;
     private String responsable;
     private long nombreLicence;
     private String cleService;
+    private String accronymeService;
     private LocalDate dateCreation;
-
 }

@@ -26,7 +26,7 @@ public class CreerServicePayload {
     //@NotBlank
     @NotNull(message = "Le prix du service est requis")
     @NumberFormat
-    private float prix;
+    private int montant;
     //@NotBlank(message = "Veuillez spécifier le satut du service")
     //@NotNull
     private StatusService statusService;
@@ -37,6 +37,18 @@ public class CreerServicePayload {
     @NotBlank(message = "responsable requis")
     @NotNull
     private String responsable;
+    //@NotBlank(message = "le nom du projet est requis")
+    //private String name ;
+    @NotBlank(message = "le site ID Du projet est Requis")
+    private String siteId;
+    @NotBlank(message = "le ApiKey du projet Est Requis")
+    private String apiKey;
+    //@NotBlank(message = "le notify_url est requis")
+    //private String notify_url;
+    //@NotBlank(message = "le return url esr requis")
+    //private String return_url;
+    @NotBlank(message =  "laccronyme du Service est requis")
+    private String accronymeService;
     //@NotBlank
     //@NotNull(message = "Le nombre de licence est requis")
     //@NumberFormat

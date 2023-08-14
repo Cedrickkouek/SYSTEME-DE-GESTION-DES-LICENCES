@@ -11,16 +11,21 @@ import com.quantechs.Licences.entities.Projet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
 import java.util.List;
 //import java.util.List;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 
 public interface LicenceRepository extends MongoRepository<Licence, String>{
     Licence findByidLicence(String idLicence);
+    //Licence findByCleLicence(String cleLicence);
 
     Page<Licence> findAllByIdService(String IdService, Pageable pageable);
 
     Licence findBycleLicence(String cleLicence);
+    boolean existsBycleLicence(String cleLicence);
+
+    Licence findByPaiementKey(String paiementKey);
 
     Licence findByidService(String idService);
 

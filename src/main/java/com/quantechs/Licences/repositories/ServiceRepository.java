@@ -7,9 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.quantechs.Licences.entities.LeService;
+//import java.util.List;
+
 
 public interface ServiceRepository extends MongoRepository<LeService , String>{
     LeService findByidService(String idService);
+    LeService findByIdPaiementProjet(String idPaiementProjet);
     Page<LeService> findAllByIdProjet(String IdProjet, Pageable pageable);
 
     LeService findBycleService(UUID cleService);

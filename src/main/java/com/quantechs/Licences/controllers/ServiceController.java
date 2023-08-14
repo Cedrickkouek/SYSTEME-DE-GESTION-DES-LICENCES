@@ -1,5 +1,6 @@
 package com.quantechs.Licences.controllers;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quantechs.Licences.entities.LeService;
+import com.quantechs.Licences.exceptions.ActivationProjetPaiementException;
+import com.quantechs.Licences.exceptions.CreerIdPaiementException;
 //import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.enumeration.StatusProjet;
@@ -24,7 +27,9 @@ import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
+import com.quantechs.Licences.payloads.in.ActivateDeactivatePayload;
 import com.quantechs.Licences.payloads.in.CreerServicePayload;
+import com.quantechs.Licences.payloads.out.projetInfos;
 import com.quantechs.Licences.services.ClassService;
 import com.quantechs.Licences.repositories.ServiceRepository;
 
@@ -40,9 +45,15 @@ public class ServiceController {
     //private final StatusLicence status;
 
     @PostMapping(value = "/creerservice")
-    public ResponseEntity<LeService> creerService( @Valid @RequestBody CreerServicePayload CreerServicePayload) throws ProjetNonTrouverException{
+    public ResponseEntity<LeService> creerService( @Valid @RequestBody CreerServicePayload CreerServicePayload) throws ProjetNonTrouverException, CreerIdPaiementException, NoSuchAlgorithmException{
         var res = classService.creerService(CreerServicePayload);
         return new ResponseEntity<LeService>(res, HttpStatus.OK);
+    }
+    @PutMapping(value = "/activerProjetPaiment")
+    public ResponseEntity<projetInfos> activerProjetPaiement(@Valid @RequestBody ActivateDeactivatePayload activateDeactivatePayload) throws ActivationProjetPaiementException
+    {
+        var res = classService.activerProjetPaiement(activateDeactivatePayload);
+        return new ResponseEntity<projetInfos>(res, HttpStatus.OK);
     }
     
     @GetMapping(value = "/listerservices")
@@ -101,7 +112,7 @@ public class ServiceController {
 
         serviceMisAjour.setNomService(creerServicePayload.getNomService());
         serviceMisAjour.setDescription(creerServicePayload.getDescription());
-        serviceMisAjour.setPrix(creerServicePayload.getPrix());
+        serviceMisAjour.setMontant(creerServicePayload.getMontant());
         serviceMisAjour.setURLLogo(creerServicePayload.getURLLogo());
         serviceMisAjour.setResponsable(creerServicePayload.getResponsable());
         //serviceMisAjour.setNombreLicence(creerServicePayload.getNombreLicence());

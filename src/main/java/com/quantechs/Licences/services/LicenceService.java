@@ -1,16 +1,20 @@
 package com.quantechs.Licences.services;
 
 import java.io.StringReader;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 //import java.time.LocalDate;
 //import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+//import java.time.temporal.ChronoUnit;
 import java.util.List;
 //import java.util.UUID;
 //import java.util.UUID;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 //import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 //import org.springframework.web.reactive.function.client.WebClient;
@@ -18,21 +22,29 @@ import org.springframework.stereotype.Service;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.JsonObject;
+import com.quantechs.Licences.Utils.HashGenerator;
+import com.quantechs.Licences.Utils.StringToLocalDateConverter;
 import com.quantechs.Licences.entities.LeService;
 //import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.entities.Projet;
+import com.quantechs.Licences.exceptions.ActivationLicencePaiementException;
 import com.quantechs.Licences.exceptions.EnumerationNotFoundException;
+import com.quantechs.Licences.exceptions.LicenceNonCreerException;
 //import com.quantechs.Licences.entities.Projet;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.PaiementNonEffectueException;
+import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
+import com.quantechs.Licences.exceptions.VerificationPaiementKeyException;
 import com.quantechs.Licences.payloads.in.CreerLicencePayload;
 import com.quantechs.Licences.payloads.in.InitialiserPaiement;
+import com.quantechs.Licences.payloads.out.ResponseLicence;
 import com.quantechs.Licences.payloads.out.paiementInfos;
+import com.quantechs.Licences.payloads.out.verificationLicenceOutput;
 //import com.quantechs.Licences.payloads.out.ResponseInitPayment;
 //import com.quantechs.Licences.payloads.in.CreerProjetPayload;
 //import com.quantechs.Licences.payloads.in.InitialiserPaiement;
@@ -68,170 +80,144 @@ public class LicenceService {
 
 
 
+
     final String URL =  "http://127.0.0.1:8100/Licences/projet";
 
 
     //WebClient client = WebClient.create(URL);
 
     //Permet d'enregistrer un objet "licence dans le repository License"
-    public Licence AcheterLicence(CreerLicencePayload creerLicencePayload) throws ServiceNonTrouverException, EnumerationNotFoundException, PaiementNonEffectueException {
-        Licence licence = Licence.builder()
-        .idService(creerLicencePayload.getIdService())
-        .idProjet(creerLicencePayload.getIdProjet())
-        .idUtilisateur(creerLicencePayload.getIdUtilisateur())
-        .nomUtilisateur(creerLicencePayload.getNomUtilisateur())
-        .idPaiement(creerLicencePayload.getIdPaiement()).build();
-        //.dateExpiration(creerLicencePayload.getDateExpiration())
-        //.cleLicence(creerLicencePayload.getCleLicence()).build();
-
-        var serv = serviceRepository.findByidService(creerLicencePayload.getIdService());
-
-        var numSer = serv.getNombreLicence();
-        serv.setNombreLicence(numSer+1);
-        serviceRepository.save(serv);
-
-        //var getidService = licence.getIdService();
-        boolean verfication = serviceRepository.existsById(creerLicencePayload.getIdService());
-        var getidService = licence.getIdService();
-        if(verfication)
-        {
-            //System.out.println("plein");
-            licence.setIdService(getidService);
-            licenceRepository.save(licence);
-        }
-        else{
-            
-            throw new ServiceNonTrouverException("L'ID du Service: "+getidService+" n'a pas été trouvé \u274C!");
-        }
-        LeService servPrix =  serviceRepository.findByidService(creerLicencePayload.getIdService());
-        var prixserv = servPrix.getPrix();
+    public Licence AcheterLicence(CreerLicencePayload creerLicencePayload) throws ServiceNonTrouverException, EnumerationNotFoundException, PaiementNonEffectueException, LicenceNonCreerException, ProjetNonTrouverException, NoSuchAlgorithmException {
         
-        licence.setPrix(prixserv);
-        
+        LeService serv = serviceRepository.findById(creerLicencePayload.getIdService()).get();
+        boolean verifService = serviceRepository.existsById(creerLicencePayload.getIdService());
+        var checkServ = serv.getStatusService(); 
 
         boolean verifProjet = projetRepository.existsById(creerLicencePayload.getIdProjet());
-        var getidProjet = licence.getIdProjet();
-        if(verifProjet)
-        {
-            licence.setIdProjet(getidProjet);
-            licenceRepository.save(licence);
-        } else{
-            throw new ServiceNonTrouverException("L'ID du Projet: "+getidProjet+" n'a pas été trouvé \u274C!");
-        }
-
-        var nomduServ = serviceRepository.findByidService(creerLicencePayload.getIdService());
-        var nomService = nomduServ.getNomService();
-        licence.setNomService(nomService);
-
+        Projet projet = projetRepository.findById(creerLicencePayload.getIdProjet()).get();
+        var checkProjet = projet.getStatusProjet();
         
-        //licence.setStatus(StatusLicence.ACTIF);
-
-        LocalDate now = LocalDate.now();
-
-        licence.setDateAchat(now);
-
-        /* Setting ending date of licence */
-        licenceRepository.save(licence);
-
-        var startDate = licence.getDateAchat();
-
-        var endDate = startDate.plusDays(30);
-
-        licence.setDateExpiration(endDate);
-
-
-        long jourValidite = ChronoUnit.DAYS.between(licence.getDateAchat(), licence.getDateExpiration());
-
-        
-        if(jourValidite > -1)
+        if(verifService) //&& verifProjet && checkServ == StatusService.DISPONIBLE && checkProjet == StatusProjet.ENCOURS)
         {
-            licence.setStatus(StatusLicence.ACTIF);
-            licence.setValidite(jourValidite+" jour(s)");
+            if(verifProjet)
+            {
+                if (checkServ == StatusService.DISPONIBLE)
+                {
+                    if(checkProjet == StatusProjet.ENCOURS)
+                    {
+                        Licence licence = Licence.builder()
+                        .idService(creerLicencePayload.getIdService())
+                        .idProjet(creerLicencePayload.getIdProjet())
+                        .idUtilisateur(creerLicencePayload.getIdUtilisateur())
+                        .nomUtilisateur(creerLicencePayload.getNomUtilisateur()).build();
+                        //.description(creerLicencePayload.getDescription())
+                        //.idPaiement(creerLicencePayload.getIdPaiement()).build();
+                        //.dateExpiration(creerLicencePayload.getDateExpiration())
+                        //.cleLicence(creerLicencePayload.getCleLicence()).build();
+                        var numSer = serv.getNombreLicence();
+                        serv.setNombreLicence(numSer+1);
+                        serviceRepository.save(serv);
+                        licence.setDescription(serv.getDescription());
+                        licence.setNomService(serv.getNomService());
+                        licence.setAccronymeService(serv.getAccronymeService());
+                        licence.setStatus(StatusLicence.NON_ACTIF);
+                        licence.setIdProjet(creerLicencePayload.getIdProjet());
+                        licence.setIdService(creerLicencePayload.getIdService());
+
+                        licenceRepository.save(licence);
+
+                        Licence LicenceActu = licenceRepository.findById(licence.getIdLicence()).get();
+                        var idLicenceActu = LicenceActu.getIdLicence();
+                        var idLicenceService = LicenceActu.getIdService();
+                        var idLicenceProjet = LicenceActu.getIdProjet();
+                        //var hash = idLicenceActu.hashCode();
+                        var hash = HashGenerator.generateHash(idLicenceActu);
+                        var serviceAccro = serv.getAccronymeService();
+
+                        String etat;
+                        if(LicenceActu.getStatus() == StatusLicence.ACTIF)
+                        {
+                            etat = "1"; 
+                        }
+                        else
+                        {
+                            etat = "0";
+                        }
+
+                        String cle = idLicenceActu+"-"+idLicenceService+"-"+idLicenceProjet+"-"+hash+"-"+serviceAccro+"-"+etat;
+                        licence.setCleLicence(cle);
+                        licenceRepository.save(licence);
+
+                         InitialiserPaiement initialiserPaiement = InitialiserPaiement.builder()
+                        .idService(licence.getIdService())
+                        .idProjet(serv.getIdPaiementProjet())
+                        .qcurrency(QCurrency.XAF)
+                        .moyenPaiement(MoyenPaiement.OM)
+                        .idClient(licence.getIdUtilisateur())
+                        .montant(serv.getMontant())
+                        .description(licence.getDescription()).build();
+                        System.out.println(initialiserPaiement);
+                        String responseInitPayment = communicationUtils.initialiserPaiementProvider(initialiserPaiement.validation());
+                        JsonObject jsonObject = Streams.parse(new JsonReader(new StringReader(responseInitPayment))).getAsJsonObject();
+                        if(jsonObject.get("code").getAsString().equals("200"))
+                        {
+                            JsonObject data = jsonObject.get("data").getAsJsonObject();
+                            paiementInfos pInfos =  paiementInfos.builder()
+                            .id(data.get("id").getAsString())
+                            .idService(data.get("idService").getAsString())
+                            .idCleint(data.get("idCleint").getAsString())
+                            .idprojet(data.get("idprojet").getAsString())
+                            .montant(data.get("montant").getAsInt())
+                            .description(data.get("description").getAsString())
+                            .moyenPaiement(data.get("moyenPaiement").getAsString())
+                            .qCurrency(data.get("qcurrency").getAsString())
+                            .paiementkey(data.get("paiementkey").getAsString())
+                            .datePaiement(data.get("datePaiement").getAsString())
+                            .statusPaiement(data.get("statusPaiement").getAsString())
+                            .paymentUrl(data.get("paymentUrl").getAsString()).build();
+                            
+                            licence.setMontant(pInfos.getMontant());
+                            licence.setStatusPaiement(pInfos.getStatusPaiement());
+                            licence.setPaiementKey(pInfos.getPaiementkey());
+                            licence.setPaiementUrl(pInfos.getPaymentUrl());
+                            licence.setQCurrency(pInfos.getQCurrency());
+                            //licence.setIdUtilisateur(pInfos.getIdCleint());
+                            licence.setDateAchat(StringToLocalDateConverter.convertStringToLocalDate(pInfos.getDatePaiement()));
+                            licenceRepository.save(licence);
+                            return licence;
+                        }
+                        else
+                        {
+                            throw new PaiementNonEffectueException("Le paiement n'a pas pu etre effectueee");
+                        }
+                        
+                    }
+                    else
+                    {
+                        throw new ProjetNonTrouverException("Le Projet avec id "+creerLicencePayload.getIdProjet()+" n'est pas ACTIF");
+                    }
+                
+                }
+                else
+                {
+                    throw new ServiceNonTrouverException("Le Service avec id "+creerLicencePayload.getIdService()+" n'est pas DISPONIBLE");
+                }
+
+            }
+            else
+            {
+                throw new ProjetNonTrouverException("Le projet avec id "+creerLicencePayload.getIdProjet()+" est n'existe pas!");
+            }
         }
-        else{
-            licence.setStatus(StatusLicence.NONACTIF);
-            licence.setValidite("Licence expiré!");
-        }
-
-
-        var LicenceActu = licenceRepository.findByidLicence(licence.getIdLicence());
-
-        var idLicenceActu = LicenceActu.getIdLicence();
-        var idLicenceService = LicenceActu.getIdService();
-        var idLicenceProjet = LicenceActu.getIdProjet();
-        var hash = idLicenceActu.hashCode();
-
-        String etat;
-        if(LicenceActu.getStatus()==StatusLicence.ACTIF)
+        else
         {
-             etat = "1"; 
-        }
-        else{
-             etat = "0";
-        }
-
-        String cle = idLicenceActu+"-"+idLicenceService+"-"+idLicenceProjet+"-"+hash+"-"+etat;
-        licence.setCleLicence(cle);
-        licenceRepository.save(licence);
-        
-        //initPaiement(licence.getIdService());
-        InitialiserPaiement initialiserPaiement = InitialiserPaiement.builder()
-        .idService("string")
-        .idProjet("64d4d5389c3c1d7255476a8c")
-        .qcurrency(QCurrency.XAF)
-        .moyenPaiement(MoyenPaiement.OM)
-        .idClient("698794925")
-        .montant(100)
-        .description("Paiement par le OM de Yann").build();
-
-
-        String responseInitPayment = communicationUtils.initialiserPaiementProvider(initialiserPaiement.validation());
-        JsonObject jsonObject = Streams.parse(new JsonReader(new StringReader(responseInitPayment))).getAsJsonObject();
-        if(jsonObject.get("code").getAsString().equals("200"))
-        {
-            JsonObject data = jsonObject.get("data").getAsJsonObject();
-            paiementInfos pInfos =  paiementInfos.builder()
-            .id(data.get("id").getAsString())
-            .idService(data.get("idService").getAsString())
-            .idCleint(data.get("idCleint").getAsString())
-            .idprojet(data.get("idprojet").getAsString())
-            .montant(data.get("montant").getAsInt())
-            .description(data.get("description").getAsString())
-            .moyenPaiement(data.get("moyenPaiement").getAsString())
-            .qCurrency(data.get("qcurrency").getAsString())
-            .paiementkey(data.get("paiementkey").getAsString())
-            .datePaiement(data.get("datePaiement").getAsString())
-            .statusPaiement(data.get("statusPaiement").getAsString())
-            .paymentUrl(data.get("paymentUrl").getAsString()).build();
-            //.numero_payeur(data.get("numero_payeur").getAsString()?null:"")
-
-            //.indicatifPay(data.get("indicatifPay").getAsString())
             
-            System.out.println(pInfos);
+            throw new ServiceNonTrouverException("L'ID du Service: "+creerLicencePayload.getIdService()+" n'a pas été trouvé \u274C!");
         }
-        
-        
-        
-        
-        return licence;
-
-        /*InitialiserPaiement initialiserPaiement = InitialiserPaiement.builder()
-        .idService(licence.getIdService())
-        .i*/
+     
         
     }
 
-   /*public ResponseInitPayment initPaiement(String idService)
-   {
-	
-	    ResponseInitPayment valeurReponse = client.post()
-		.uri("/initialize/" +idService).accept(MediaType.APPLICATION_JSON)
-		.body(Mono.just(idService), String.class)
-		.retrieve()
-		.bodyToMono(ResponseInitPayment.class).block();
-		System.out.println(valeurReponse);
-		return valeurReponse;
-    }*/
 
     public List<Licence> listerToutesLicences() //Permet de retouner une Liste de toutes les licences
     {                                    //qui sont dans le repository de licence
@@ -249,7 +235,7 @@ public class LicenceService {
 
         Licence licence =  licenceRepository.findByidLicence(id);
 
-        if(licence.getStatus()==StatusLicence.NONACTIF)
+        if(licence.getStatus()==StatusLicence.NON_ACTIF)
         {
             
             licence.getIdLicence() ;
@@ -263,15 +249,49 @@ public class LicenceService {
         else{
             throw new LicenceNonTrouverException("La licence avec pour ID: "+id+" n'a pas été trouvé \u274C!");
         }
-    } 
+    }
 
-    public String verifierLicenceParCle(String cleLicence) throws LicenceNonTrouverException
+    public ResponseLicence verifierLicence(String cleLicence) throws LicenceNonTrouverException, VerificationPaiementKeyException, LicenceNonCreerException
+    {
+        verificationLicenceOutput verif = new verificationLicenceOutput();
+        boolean verifierExiste = licenceRepository.existsBycleLicence(cleLicence);
+        Licence licence = licenceRepository.findBycleLicence(cleLicence);
+
+        if(verifierExiste)
+        {
+          boolean verif1 = verifierLicenceParCle(cleLicence);
+          String status = communicationUtils.veriferPaiementLicence(licence.getPaiementKey());
+          System.out.println(verif1);
+          System.out.println(status);
+          if(status == "SUCCES" && verif1 && licence.getStatus()==StatusLicence.ACTIF)
+          {
+            verif.setResult(true);
+            verif.setClassSecondaire(licence.getAccronymeService());
+            return new ResponseLicence(200, "Verification Effectué!", verif);
+          }
+          else
+          {
+            verif.setResult(false);
+            verif.setClassSecondaire(licence.getAccronymeService());
+            return new ResponseLicence(200, "Verification Effectué!", verif);
+            //throw new VerificationPaiementKeyException("La licence avec le paiementKey "+licence.getPaiementKey()+" n'est pas valide!");
+          }
+        }
+        else
+        {
+            throw new LicenceNonCreerException("La licence avec cle "+cleLicence+" n'existe pas");
+        }
+    }
+
+    private boolean verifierLicenceParCle(String cleLicence) throws LicenceNonTrouverException
     {
         String[] partieCle = cleLicence.split("-");
-        int t = partieCle.length;
-        System.out.print("LA TAILLE DE LA PARTIECLE est: "+t);
+        //int t = partieCle.length;
+        //System.out.print("LA TAILLE DE LA PARTIECLE est: "+t);
+        Licence licence = licenceRepository.findBycleLicence(cleLicence);
+        LeService ser = serviceRepository.findById(licence.getIdService()).get();
 
-        if(partieCle.length == 5)
+        if(partieCle.length == 6)
         {
             String partCle1 = partieCle[0];
             boolean verification1 = licenceRepository.existsById(partCle1);
@@ -284,30 +304,97 @@ public class LicenceService {
 
             String partCle4 = partieCle[3];
             int partCle4ToInt = Integer.parseInt(partCle4);
+            System.out.println(partCle4ToInt);
 
-            int hashLis = partCle1.hashCode() ;
+            String partCle5 = partieCle[5];
+            System.out.println(partCle5);
+            boolean verification4 = ser.getAccronymeService() == licence.getAccronymeService();
 
 
-            Licence licence = licenceRepository.findBycleLicence(cleLicence);
-             
+
+            int hashLis = partCle1.hashCode();
+            
         
-            if(verification1 && verification2 && verification3 && (hashLis == partCle4ToInt) && (licence!=null))
+            if(verification1 && verification2 && verification3 && (hashLis == partCle4ToInt) && (licence!=null) && verification4)
             {   
-                String msg = "La Licene avec pour clé: "+cleLicence+" est Valid \u2705";
-                return msg;
+                //String msg = "La Licene avec pour clé: "+cleLicence+" est Valid \u2705";
+                return true;
             }
             else{
-            String msg = "La Licence avec pour clé: "+cleLicence+" est Invalid \u274C!";
-            return msg;
+            //String msg = "La Licence avec pour clé: "+cleLicence+" est Invalid \u274C!";
+            return false;
             }
         } 
         
         else{
-            throw new LicenceNonTrouverException("La Licence avec pour clé: "+cleLicence+" ne respecte pas le format requis (taille different de 5) \u274C!");
+            throw new LicenceNonTrouverException("La Licence avec pour clé: "+cleLicence+" ne respecte pas le format requis (taille different de 6) \u274C!");
         }
     }
 
+    public ResponseLicence activerLicenceParPaiementKey(String paiementKey) throws ActivationLicencePaiementException
 
+    {
+        Licence licence = licenceRepository.findByPaiementKey(paiementKey);
+        if(licence != null)
+        {
+            LocalDate maintenant = LocalDate.now();
+
+            licence.setDateActivation(maintenant);
+            //var startDate = licence.getDateAchat();
+            var endDate = maintenant.plusDays(30);
+            licence.setDateExpiration(endDate);
+
+            long jourValidite = ChronoUnit.DAYS.between(licence.getDateActivation(), licence.getDateExpiration());
+        
+            if(jourValidite > -1)
+            {
+                licence.setStatus(StatusLicence.ACTIF);
+                licence.setValidite(jourValidite+" jour(s)");
+
+                var cleLicence = licence.getCleLicence();
+                String[] partieCle = cleLicence.split("-");
+
+                partieCle[4] = "1";
+                String part1 = partieCle[0];
+                String part2 = partieCle[1];
+                String part3 = partieCle[2];
+                String part4 = partieCle[3];
+                String cle = part1+"-"+part2+"-"+part3+"-"+part4+"-"+partieCle[4];
+
+                licence.setCleLicence(cle);
+
+                licenceRepository.save(licence);
+                return new ResponseLicence(200, "Activer avec succes", licence);
+            }
+            else
+            {
+                licence.setStatus(StatusLicence.NON_ACTIF);
+                licence.setValidite("Licence expiré!");
+                licenceRepository.save(licence);
+                return new ResponseLicence(400, "Echec d'activation", "Veuillez reessayer!");
+            }
+            //String msg =  "La Licence dont le paiementKey est "+paiementKey+" a été activée avec succès!";
+            
+        }
+        else
+        {
+            throw new ActivationLicencePaiementException("La Licence dont le paiementKey est "+paiementKey+" n'existe pas!");
+        }
+    }
+
+    public List<Licence> rechercherParNumeroEtStatusActif(String idUtilisateur)
+    {
+        List<Licence> listTrier = new ArrayList<>();
+        var listLicenceParNumeroUser = licenceRepository.findAll(Sort.by(idUtilisateur));
+        for (Licence licence : listLicenceParNumeroUser) {
+            if(licence.getStatus() == StatusLicence.ACTIF)
+            {
+                listTrier.add(licence);
+            }
+        }
+        return listTrier;
+        
+    }
 
     public Licence activerLicence(String idLicence) 
     {
@@ -367,7 +454,7 @@ public class LicenceService {
     public Licence desactiverLicence(String idLicence)
     { 
         Licence licence = licenceRepository.findByidLicence(idLicence);
-        licence.setStatus(StatusLicence.NONACTIF);
+        licence.setStatus(StatusLicence.NON_ACTIF);
     
 
         var cleLicence = licence.getCleLicence();
@@ -389,7 +476,7 @@ public class LicenceService {
 
         licence.setCleLicence(cle);
 
-        licence.setStatus(StatusLicence.NONACTIF);
+        licence.setStatus(StatusLicence.NON_ACTIF);
         licenceRepository.save(licence);
         return licence;
 

@@ -1,5 +1,6 @@
 package com.quantechs.Licences.controllers;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 //import java.util.UUID;
 
@@ -20,15 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quantechs.Licences.entities.Licence;
 //import com.quantechs.Licences.entities.Projet;
 import com.quantechs.Licences.enumeration.StatusLicence;
+import com.quantechs.Licences.exceptions.ActivationLicencePaiementException;
 import com.quantechs.Licences.exceptions.EnumerationNotFoundException;
+import com.quantechs.Licences.exceptions.LicenceNonCreerException;
 //import com.quantechs.Licences.enumeration.StatusProjet;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.enumeration.StatusLicence;
 //import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.PaiementNonEffectueException;
+import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
+import com.quantechs.Licences.exceptions.VerificationPaiementKeyException;
 import com.quantechs.Licences.payloads.in.CreerLicencePayload;
+import com.quantechs.Licences.payloads.out.ResponseLicence;
+//import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.services.LicenceService;
 
 import jakarta.validation.Valid;
@@ -41,10 +48,11 @@ import lombok.AllArgsConstructor;
 @RequestMapping(value = "/licence")
 public class LicenceController {
     private final LicenceService licenceService;
+    //private final LicenceRepository licenceRepository;
     //private final StatusLicence status;
 
     @PostMapping(value = "/Acheterlicence")
-    public ResponseEntity<Licence> AcheterLicence( @Valid @RequestBody CreerLicencePayload CreerLicencePayload) throws ServiceNonTrouverException, EnumerationNotFoundException, PaiementNonEffectueException{
+    public ResponseEntity<Licence> AcheterLicence( @Valid @RequestBody CreerLicencePayload CreerLicencePayload) throws ServiceNonTrouverException, EnumerationNotFoundException, PaiementNonEffectueException, LicenceNonCreerException, ProjetNonTrouverException, NoSuchAlgorithmException{
         var res = licenceService.AcheterLicence(CreerLicencePayload);
         return new ResponseEntity<Licence>(res,HttpStatus.OK);
     }
@@ -54,6 +62,13 @@ public class LicenceController {
         var res = licenceService.activerLicence(idLicence); 
 
         return new ResponseEntity<Licence>(res, HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping(value="/activerlicenceParPaiementKey/{paiementKey}")
+    public ResponseEntity<ResponseLicence> activerLicenceParPaiementKey(@PathVariable String paiementKey) throws LicenceNonTrouverException, ActivationLicencePaiementException{
+        var res = licenceService.activerLicenceParPaiementKey(paiementKey); 
+
+        return new ResponseEntity<ResponseLicence>(res, HttpStatus.ACCEPTED);
     }
 
     @PutMapping(value="/desactiverlicence/{idLicence}")
@@ -75,16 +90,28 @@ public class LicenceController {
         licenceService.supprimerToutesLicences();
     }*/
 
-    @GetMapping(value = "/rechercher/{idLicence}")
+    @GetMapping(value = "/rechercherId/{idLicence}")
     public ResponseEntity<Licence> rechercherUneLicenceParId(@PathVariable String idLicence) throws LicenceNonTrouverException
     {
         return ResponseEntity.ok(licenceService.rechercheUneLicenceParId(idLicence));    
     }
-
-    @GetMapping(value = "/verification/{cleLicence}")
-    public String verificationLicenceParCle(@PathVariable String cleLicence) throws LicenceNonTrouverException 
+    @GetMapping(value = "/rechercherNumTelephoneEtActive/{numeroTelephone}")
+    public ResponseEntity<List<Licence>> rechercherUneLicenceNumero(@PathVariable String numeroTelephone) throws LicenceNonTrouverException
     {
-        var res = licenceService.verifierLicenceParCle(cleLicence);
+        return ResponseEntity.ok(licenceService.rechercherParNumeroEtStatusActif(numeroTelephone));    
+    }
+
+    /* @GetMapping(value = "/rechercherPaiement/{paiementKey}")
+    public ResponseEntity<Licence> rechercherUneLicenceParPaiementKey(@PathVariable String paiementKey) throws LicenceNonTrouverException
+    {
+        return ResponseEntity.ok(licenceRepository.findByPaiementKey(paiementKey));    
+    }
+    */
+
+    @GetMapping(value = "/verificationParCle/{cleLicence}")
+    public ResponseLicence verificationLicenceParCle(@PathVariable String cleLicence) throws LicenceNonTrouverException, VerificationPaiementKeyException, LicenceNonCreerException 
+    {
+        var res = licenceService.verifierLicence(cleLicence);
         return res;
 
         /*String msg = "La Licene avec pour clé: "+cleLicence+" est Valid \u2705";

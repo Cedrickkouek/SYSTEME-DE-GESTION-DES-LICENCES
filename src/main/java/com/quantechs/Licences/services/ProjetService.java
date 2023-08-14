@@ -1,5 +1,6 @@
 package com.quantechs.Licences.services;
 
+import java.security.NoSuchAlgorithmException;
 //import java.time.temporal.ChronoUnit;
 import java.util.List;
 //import java.util.UUID;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Sort;
 //import org.springframework.data.mongodb.repository.MongoRepository;
 import  org.springframework.stereotype.Service;
 
+import com.quantechs.Licences.Utils.HashGenerator;
 import com.quantechs.Licences.entities.LeService;
 import com.quantechs.Licences.entities.Licence;
 //import com.fasterxml.uuid.Generators;
@@ -39,7 +41,7 @@ public class ProjetService {
     private final LicenceRepository licenceRepository;
     private final ServiceRepository serviceRepository;
 
-        public Projet creerProjet(String idPaiementApi, CreerProjetPayload creerProjetPayload) throws PaiementNonValideException {
+        public Projet creerProjet(String idPaiementApi, CreerProjetPayload creerProjetPayload) throws PaiementNonValideException, NoSuchAlgorithmException {
         
         boolean verificationPaiement = verifierPaiementParId(idPaiementApi);
 
@@ -62,7 +64,8 @@ public class ProjetService {
         
 
             var idProjetActu = projetActu.getIdProjet();
-            var hash = idProjetActu.hashCode();
+            //var hash = idProjetActu.hashCode();
+            var hash = HashGenerator.generateHash(idProjetActu);
 
             String etatP;
             if(projetActu.getStatusProjet()==StatusProjet.ENCOURS)
@@ -158,7 +161,7 @@ public class ProjetService {
         var listLicenceProjet = licenceRepository.findAll(Sort.by(idProjet));
 
         for (Licence projet2 : listLicenceProjet) {
-            projet2.setStatus(StatusLicence.NONACTIF);
+            projet2.setStatus(StatusLicence.NON_ACTIF);
 
             licenceRepository.save(projet2);
         }

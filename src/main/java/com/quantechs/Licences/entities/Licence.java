@@ -8,7 +8,6 @@ import java.time.LocalDate;
 //import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import com.quantechs.Licences.enumeration.StatusLicence;
 
 import jakarta.persistence.Entity;
@@ -41,13 +40,17 @@ public class Licence {
     private LocalDate dateAchat;
     private String idUtilisateur;
     private String nomUtilisateur;
-    private String paiementKey;
     private StatusLicence status;
-    private double prix;
+    private LocalDate dateActivation;
+    private int montant;
+    private String statusPaiement;
+    private String qCurrency;
     private String paiementUrl;
-    private String idPaiement;
+    private String paiementKey;
     private LocalDate dateExpiration;
     private String validite;
+    private String description;
+    private String accronymeService;
     //@GeneratedValue(strategy = GenerationType.UUID)
 
     /*@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "demo_sql")

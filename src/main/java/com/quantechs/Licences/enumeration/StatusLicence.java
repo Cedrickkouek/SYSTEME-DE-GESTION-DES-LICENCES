@@ -1,6 +1,6 @@
 package com.quantechs.Licences.enumeration;
 
 public enum StatusLicence {
-    ACTIF,
-    NONACTIF
+    NON_ACTIF,
+    ACTIF
 }

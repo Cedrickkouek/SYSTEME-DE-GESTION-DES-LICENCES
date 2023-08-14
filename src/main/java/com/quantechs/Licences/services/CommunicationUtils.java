@@ -12,13 +12,99 @@ import org.springframework.stereotype.Service;
 //import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.quantechs.Licences.Utils.GlobalUrl;
+import com.quantechs.Licences.exceptions.ActivationProjetPaiementException;
+//import com.quantechs.Licences.exceptions.ActivationLicencePaiementException;
+import com.quantechs.Licences.exceptions.CreerIdPaiementException;
 import com.quantechs.Licences.exceptions.PaiementNonEffectueException;
+import com.quantechs.Licences.exceptions.VerificationPaiementKeyException;
+import com.quantechs.Licences.interfaces.ActiverProjetPaiement;
+import com.quantechs.Licences.interfaces.CreerIdPaiementProjet;
 import com.quantechs.Licences.interfaces.InitialiserPaiementProvider;
+import com.quantechs.Licences.interfaces.VerifierPaiementLicence;
+import com.quantechs.Licences.payloads.in.ActivateDeactivatePayload;
+import com.quantechs.Licences.payloads.in.CreerIdPaiementProjetPayload;
 //import com.quantechs.Licences.exceptions.EnumerationNotFoundException;
 import com.quantechs.Licences.payloads.in.InitialiserPaiement;
 //import com.quantechs.Licences.payloads.out.ResponseInitPayment;
 //import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
+
+@Service
+public class CommunicationUtils implements InitialiserPaiementProvider, CreerIdPaiementProjet, VerifierPaiementLicence, ActiverProjetPaiement
+{
+    GlobalUrl globalUrl =  new GlobalUrl();
+    
+    @Override
+    public String initialiserPaiementProvider(InitialiserPaiement initialiserPaiement) throws PaiementNonEffectueException {
+        try {
+        final String URL =  globalUrl.getEndPointPaiement();
+        //final String URL =  "http://192.168.100.18:8085/qpaiement";
+        System.out.println(URL);
+        WebClient client = WebClient.create(URL);
+        Mono<String> responseValue =
+        client.post().uri("/initialize").accept(MediaType.APPLICATION_JSON)
+        .bodyValue(initialiserPaiement)
+        .retrieve()
+        .bodyToMono(String.class);
+        return responseValue.block();
+    } catch (Exception e) {
+        throw new PaiementNonEffectueException("Le paiement n'a pas pu etre effectué");
+    }
+        
+    }
+
+    @Override
+    public String creerIdPaiementProjet(CreerIdPaiementProjetPayload creerIdPaiementProjetPayload) throws CreerIdPaiementException {
+        
+        try {
+        final String URL =  globalUrl.getEndPointPaiement();
+        WebClient client = WebClient.create(URL);
+        Mono<String> responseValue =
+        client.post().uri("/create_project").accept(MediaType.APPLICATION_JSON)
+        .bodyValue(creerIdPaiementProjetPayload)
+        .retrieve()
+        .bodyToMono(String.class);
+        return responseValue.block();
+    } catch (Exception e) {
+        throw new CreerIdPaiementException("Erreur lors de la Creation du projet de Paiement");
+    }
+        
+    }
+
+    @Override
+    public String veriferPaiementLicence(String paiementKey) throws VerificationPaiementKeyException {
+        try {
+            final String URL =  globalUrl.getEndPointPaiement();
+            WebClient client = WebClient.create(URL);
+            Mono<String> responseValue =
+            client.get().uri("/verifierPaiementStatus/"+paiementKey).accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToMono(String.class);
+            return responseValue.block();
+        } catch (Exception e) {
+           throw new VerificationPaiementKeyException("Echec lors de la verification du Paiement de la Licence");
+        }
+    }
+
+    @Override
+    public String activerPaimentProjet(ActivateDeactivatePayload activateDeactivatePayload) throws ActivationProjetPaiementException {
+        try {
+            final String URL =  globalUrl.getEndPointPaiement();
+            WebClient client = WebClient.create(URL);
+            Mono<String> responseValue =
+            client.put().uri("/change_status").accept(MediaType.APPLICATION_JSON)
+            .bodyValue(activateDeactivatePayload)
+            .retrieve()
+            .bodyToMono(String.class);
+            return responseValue.block();
+        } catch (Exception e) {
+           throw new ActivationProjetPaiementException("Echec lors de l'activation de projet Paiement "+activateDeactivatePayload.getId());
+        }
+    }
+
+}
+
 
 
 //import jakarta.validation.Valid;
@@ -33,27 +119,7 @@ public interface CommunicationUtils {
         
 
 }*/
-@Service
-public class CommunicationUtils implements InitialiserPaiementProvider
-{
-    @Override
-    public String initialiserPaiementProvider(InitialiserPaiement initialiserPaiement) throws PaiementNonEffectueException {
-        try {
-        final String URL =  "http://127.0.0.1:8085/qpaiement";
-        WebClient client = WebClient.create(URL);
-        Mono<String> responseValue =
-        client.post().uri("/initialize").accept(MediaType.APPLICATION_JSON)
-        .bodyValue(initialiserPaiement)
-        .retrieve()
-        .bodyToMono(String.class);
-        return responseValue.block();
-    } catch (Exception e) {
-        throw new PaiementNonEffectueException("Le paiement n'a pas pu etre effectué");
-    }
-        
-    }
-    
-}
+
 
     
 

@@ -1,5 +1,6 @@
 package com.quantechs.Licences.controllers;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 //import java.util.UUID;
 
@@ -39,7 +40,7 @@ public class ProjetController {
     private ProjetRepository projetRepository;
 
     @PostMapping(value = "/creerprojet/{idPaimentApi}")
-    public ResponseEntity<Projet> creerProjet(@Valid @PathVariable("idPaimentApi") String idPaiementApi, @RequestBody CreerProjetPayload creerProjetPayload) throws PaiementNonValideException, EnumerationNotFoundException{
+    public ResponseEntity<Projet> creerProjet(@Valid @PathVariable("idPaimentApi") String idPaiementApi, @RequestBody CreerProjetPayload creerProjetPayload) throws PaiementNonValideException, EnumerationNotFoundException, NoSuchAlgorithmException{
         var yes = projetService.creerProjet(idPaiementApi, creerProjetPayload);
         return new ResponseEntity<Projet>(yes,HttpStatus.OK);
     }
