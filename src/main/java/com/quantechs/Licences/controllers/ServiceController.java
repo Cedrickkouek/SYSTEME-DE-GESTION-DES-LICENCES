@@ -45,7 +45,7 @@ public class ServiceController {
     //private final StatusLicence status;
 
     @PostMapping(value = "/creerservice")
-    public ResponseEntity<LeService> creerService( @Valid @RequestBody CreerServicePayload CreerServicePayload) throws ProjetNonTrouverException, CreerIdPaiementException, NoSuchAlgorithmException{
+    public ResponseEntity<LeService> creerService( @Valid @RequestBody CreerServicePayload CreerServicePayload) throws ProjetNonTrouverException, CreerIdPaiementException, NoSuchAlgorithmException, ServiceNonTrouverException{
         var res = classService.creerService(CreerServicePayload);
         return new ResponseEntity<LeService>(res, HttpStatus.OK);
     }
@@ -53,6 +53,9 @@ public class ServiceController {
     public ResponseEntity<projetInfos> activerProjetPaiement(@Valid @RequestBody ActivateDeactivatePayload activateDeactivatePayload) throws ActivationProjetPaiementException
     {
         var res = classService.activerProjetPaiement(activateDeactivatePayload);
+        LeService serv = serviceRepository.findByIdPaiementProjet(activateDeactivatePayload.getId());
+        serv.setStatusPaiementProjet(res.getStateProjet());
+        serviceRepository.save(serv);
         return new ResponseEntity<projetInfos>(res, HttpStatus.OK);
     }
     

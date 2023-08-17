@@ -43,10 +43,10 @@ public class CreerServicePayload {
     private String siteId;
     @NotBlank(message = "le ApiKey du projet Est Requis")
     private String apiKey;
-    //@NotBlank(message = "le notify_url est requis")
-    //private String notify_url;
-    //@NotBlank(message = "le return url esr requis")
-    //private String return_url;
+    @NotBlank(message = "le notify_url est requis")
+    private String notify_url;
+    @NotBlank(message = "le return url esr requis")
+    private String return_url;
     @NotBlank(message =  "laccronyme du Service est requis")
     private String accronymeService;
     //@NotBlank

@@ -77,7 +77,7 @@ public class ProjetService {
                 etatP = "0";
             }
 
-
+            
             String cle = idProjetActu+"-"+hash+"-"+etatP;
             projet.setCleProjet(cle);
             projetRepository.save(projet);

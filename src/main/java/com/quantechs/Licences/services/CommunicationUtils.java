@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 //import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.quantechs.Licences.Utils.GlobalUrl;
+import com.quantechs.Licences.config.GlobalUrl;
+//import com.quantechs.Licences.Utils.GlobalUrl;
 import com.quantechs.Licences.exceptions.ActivationProjetPaiementException;
 //import com.quantechs.Licences.exceptions.ActivationLicencePaiementException;
 import com.quantechs.Licences.exceptions.CreerIdPaiementException;
@@ -33,14 +34,12 @@ import reactor.core.publisher.Mono;
 @Service
 public class CommunicationUtils implements InitialiserPaiementProvider, CreerIdPaiementProjet, VerifierPaiementLicence, ActiverProjetPaiement
 {
-    GlobalUrl globalUrl =  new GlobalUrl();
     
     @Override
     public String initialiserPaiementProvider(InitialiserPaiement initialiserPaiement) throws PaiementNonEffectueException {
         try {
-        final String URL =  globalUrl.getEndPointPaiement();
-        //final String URL =  "http://192.168.100.18:8085/qpaiement";
-        System.out.println(URL);
+        final String URL = GlobalUrl.PAIEMENT_URL;
+        //final String URL =  "http://192.168.100.39:8085/q(paiement";
         WebClient client = WebClient.create(URL);
         Mono<String> responseValue =
         client.post().uri("/initialize").accept(MediaType.APPLICATION_JSON)
@@ -58,7 +57,7 @@ public class CommunicationUtils implements InitialiserPaiementProvider, CreerIdP
     public String creerIdPaiementProjet(CreerIdPaiementProjetPayload creerIdPaiementProjetPayload) throws CreerIdPaiementException {
         
         try {
-        final String URL =  globalUrl.getEndPointPaiement();
+        final String URL = GlobalUrl.PAIEMENT_URL;
         WebClient client = WebClient.create(URL);
         Mono<String> responseValue =
         client.post().uri("/create_project").accept(MediaType.APPLICATION_JSON)
@@ -74,8 +73,11 @@ public class CommunicationUtils implements InitialiserPaiementProvider, CreerIdP
 
     @Override
     public String veriferPaiementLicence(String paiementKey) throws VerificationPaiementKeyException {
+        System.out.println();
         try {
-            final String URL =  globalUrl.getEndPointPaiement();
+            System.out.println("avant lien");
+            final String URL = GlobalUrl.PAIEMENT_URL;
+            System.out.println("apres lien");
             WebClient client = WebClient.create(URL);
             Mono<String> responseValue =
             client.get().uri("/verifierPaiementStatus/"+paiementKey).accept(MediaType.APPLICATION_JSON)
@@ -90,7 +92,7 @@ public class CommunicationUtils implements InitialiserPaiementProvider, CreerIdP
     @Override
     public String activerPaimentProjet(ActivateDeactivatePayload activateDeactivatePayload) throws ActivationProjetPaiementException {
         try {
-            final String URL =  globalUrl.getEndPointPaiement();
+            final String URL = GlobalUrl.PAIEMENT_URL;
             WebClient client = WebClient.create(URL);
             Mono<String> responseValue =
             client.put().uri("/change_status").accept(MediaType.APPLICATION_JSON)
@@ -119,9 +121,3 @@ public interface CommunicationUtils {
         
 
 }*/
-
-
-    
-
-
- 

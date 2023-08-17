@@ -40,6 +40,7 @@ import com.quantechs.Licences.exceptions.PaiementNonEffectueException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 import com.quantechs.Licences.exceptions.VerificationPaiementKeyException;
+import com.quantechs.Licences.payloads.in.ActiverLicenceFromPaiement;
 import com.quantechs.Licences.payloads.in.CreerLicencePayload;
 import com.quantechs.Licences.payloads.in.InitialiserPaiement;
 import com.quantechs.Licences.payloads.out.ResponseLicence;
@@ -251,7 +252,7 @@ public class LicenceService {
         }
     }
 
-    public ResponseLicence verifierLicence(String cleLicence) throws LicenceNonTrouverException, VerificationPaiementKeyException, LicenceNonCreerException
+    public ResponseLicence verifierLicence(String cleLicence) throws LicenceNonTrouverException, VerificationPaiementKeyException, LicenceNonCreerException, NoSuchAlgorithmException
     {
         verificationLicenceOutput verif = new verificationLicenceOutput();
         boolean verifierExiste = licenceRepository.existsBycleLicence(cleLicence);
@@ -263,16 +264,18 @@ public class LicenceService {
           String status = communicationUtils.veriferPaiementLicence(licence.getPaiementKey());
           System.out.println(verif1);
           System.out.println(status);
-          if(status == "SUCCES" && verif1 && licence.getStatus()==StatusLicence.ACTIF)
+          if((status.equals("SUCCES")) && verif1 && licence.getStatus().equals(StatusLicence.ACTIF))
           {
             verif.setResult(true);
             verif.setClassSecondaire(licence.getAccronymeService());
+            System.out.println("***** "+verif);
             return new ResponseLicence(200, "Verification Effectué!", verif);
           }
           else
           {
             verif.setResult(false);
             verif.setClassSecondaire(licence.getAccronymeService());
+            System.out.println("***** "+verif);
             return new ResponseLicence(200, "Verification Effectué!", verif);
             //throw new VerificationPaiementKeyException("La licence avec le paiementKey "+licence.getPaiementKey()+" n'est pas valide!");
           }
@@ -283,7 +286,7 @@ public class LicenceService {
         }
     }
 
-    private boolean verifierLicenceParCle(String cleLicence) throws LicenceNonTrouverException
+    private boolean verifierLicenceParCle(String cleLicence) throws LicenceNonTrouverException, NoSuchAlgorithmException
     {
         String[] partieCle = cleLicence.split("-");
         //int t = partieCle.length;
@@ -295,27 +298,30 @@ public class LicenceService {
         {
             String partCle1 = partieCle[0];
             boolean verification1 = licenceRepository.existsById(partCle1);
+            
 
             String partCle2 = partieCle[1];
             boolean verification2 = serviceRepository.existsById(partCle2);
+            
 
             String partCle3 = partieCle[2];
             boolean verification3 = projetRepository.existsById(partCle3);
+            
 
             String partCle4 = partieCle[3];
-            int partCle4ToInt = Integer.parseInt(partCle4);
-            System.out.println(partCle4ToInt);
+            System.out.println(partCle4);
 
-            String partCle5 = partieCle[5];
-            System.out.println(partCle5);
-            boolean verification4 = ser.getAccronymeService() == licence.getAccronymeService();
-
+            
+            boolean verification4 = ser.getAccronymeService().equals(licence.getAccronymeService());
+            System.out.println(verification4);
 
 
-            int hashLis = partCle1.hashCode();
+            //int hashLis = partCle1.hashCode() ;
+            var hashLis = HashGenerator.generateHash(partCle1);
+            System.out.println(hashLis);
             
         
-            if(verification1 && verification2 && verification3 && (hashLis == partCle4ToInt) && (licence!=null) && verification4)
+            if(verification1 && verification2 && verification3 && (hashLis.equals(partCle4)) && (licence!=null) && verification4)
             {   
                 //String msg = "La Licene avec pour clé: "+cleLicence+" est Valid \u2705";
                 return true;
@@ -331,10 +337,10 @@ public class LicenceService {
         }
     }
 
-    public ResponseLicence activerLicenceParPaiementKey(String paiementKey) throws ActivationLicencePaiementException
+    public ResponseLicence activerLicenceParPaiementKey(ActiverLicenceFromPaiement activerLicenceFromPaiement) throws ActivationLicencePaiementException
 
     {
-        Licence licence = licenceRepository.findByPaiementKey(paiementKey);
+        Licence licence = licenceRepository.findByPaiementKey(activerLicenceFromPaiement.getPaiementKey());
         if(licence != null)
         {
             LocalDate maintenant = LocalDate.now();
@@ -349,17 +355,18 @@ public class LicenceService {
             if(jourValidite > -1)
             {
                 licence.setStatus(StatusLicence.ACTIF);
+                licence.setStatusPaiement(activerLicenceFromPaiement.getPaiementStatus());
                 licence.setValidite(jourValidite+" jour(s)");
 
                 var cleLicence = licence.getCleLicence();
                 String[] partieCle = cleLicence.split("-");
-
-                partieCle[4] = "1";
+                partieCle[5] = "1";
                 String part1 = partieCle[0];
                 String part2 = partieCle[1];
                 String part3 = partieCle[2];
                 String part4 = partieCle[3];
-                String cle = part1+"-"+part2+"-"+part3+"-"+part4+"-"+partieCle[4];
+                String part5 = partieCle[4];
+                String cle = part1+"-"+part2+"-"+part3+"-"+part4+"-"+part5+"-"+partieCle[5];
 
                 licence.setCleLicence(cle);
 
@@ -378,7 +385,7 @@ public class LicenceService {
         }
         else
         {
-            throw new ActivationLicencePaiementException("La Licence dont le paiementKey est "+paiementKey+" n'existe pas!");
+            throw new ActivationLicencePaiementException("La Licence dont le paiementKey est "+activerLicenceFromPaiement.getPaiementKey()+" n'existe pas!");
         }
     }
 
@@ -424,12 +431,13 @@ public class LicenceService {
         var cleLicence = licence.getCleLicence();
         String[] partieCle = cleLicence.split("-");
 
-        partieCle[4] = "1";
-        String part1 = partieCle[0];
-        String part2 = partieCle[1];
-        String part3 = partieCle[2];
-        String part4 = partieCle[3];
-        String cle = part1+"-"+part2+"-"+part3+"-"+part4+"-"+partieCle[4];
+        partieCle[5] = "1";
+            String part1 = partieCle[0];
+            String part2 = partieCle[1];
+            String part3 = partieCle[2];
+            String part4 = partieCle[3];
+            String part5 = partieCle[4];
+            String cle = part1+"-"+part2+"-"+part3+"-"+part4+"-"+part5+"-"+partieCle[5];
 
         licence.setCleLicence(cle);
 
@@ -471,8 +479,8 @@ public class LicenceService {
         String part2 = partieCle[1];
         String part3 = partieCle[2];
         String part4 = partieCle[3];
-        partieCle[4] = "0";
-        String cle = part1+"-"+part2+"-"+part3+"-"+part4+"-"+partieCle[4];
+        String part5 = partieCle[4];
+        String cle = part1+"-"+part2+"-"+part3+"-"+part4+"-"+part5+"-"+partieCle[5];
 
         licence.setCleLicence(cle);
 

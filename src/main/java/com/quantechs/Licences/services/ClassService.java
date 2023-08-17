@@ -63,9 +63,9 @@ public class ClassService {
         CreerIdPaiementProjetPayload cIpP = CreerIdPaiementProjetPayload.builder()
         .name(creerServicePayload.getNomService())
         .siteId(creerServicePayload.getSiteId())
-        .apiKey(creerServicePayload.getApiKey()).build();
-        //.notify_url(creerServicePayload.getNotify_url())
-        //.return_url(creerServicePayload.getReturn_url()).build();
+        .apiKey(creerServicePayload.getApiKey())
+        .notify_url(creerServicePayload.getNotify_url())
+        .return_url(creerServicePayload.getReturn_url()).build();
 
         String responseCreerProjetPaiement = communicationUtils.creerIdPaiementProjet(cIpP);
         JsonObject jsonObject = Streams.parse(new JsonReader(new StringReader(responseCreerProjetPaiement))).getAsJsonObject();

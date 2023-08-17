@@ -33,8 +33,10 @@ import com.quantechs.Licences.exceptions.PaiementNonEffectueException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
 import com.quantechs.Licences.exceptions.ServiceNonTrouverException;
 import com.quantechs.Licences.exceptions.VerificationPaiementKeyException;
+import com.quantechs.Licences.payloads.in.ActiverLicenceFromPaiement;
 import com.quantechs.Licences.payloads.in.CreerLicencePayload;
 import com.quantechs.Licences.payloads.out.ResponseLicence;
+import com.quantechs.Licences.repositories.LicenceRepository;
 //import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.services.LicenceService;
 
@@ -48,7 +50,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping(value = "/licence")
 public class LicenceController {
     private final LicenceService licenceService;
-    //private final LicenceRepository licenceRepository;
+    private final LicenceRepository licenceRepository;
     //private final StatusLicence status;
 
     @PostMapping(value = "/Acheterlicence")
@@ -64,9 +66,9 @@ public class LicenceController {
         return new ResponseEntity<Licence>(res, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping(value="/activerlicenceParPaiementKey/{paiementKey}")
-    public ResponseEntity<ResponseLicence> activerLicenceParPaiementKey(@PathVariable String paiementKey) throws LicenceNonTrouverException, ActivationLicencePaiementException{
-        var res = licenceService.activerLicenceParPaiementKey(paiementKey); 
+    @PutMapping(value="/activerlicenceParPaiementKey")
+    public ResponseEntity<ResponseLicence> activerLicenceParPaiementKey(@Valid @RequestBody ActiverLicenceFromPaiement activerLicenceFromPaiement) throws LicenceNonTrouverException, ActivationLicencePaiementException{
+        var res = licenceService.activerLicenceParPaiementKey(activerLicenceFromPaiement); 
 
         return new ResponseEntity<ResponseLicence>(res, HttpStatus.ACCEPTED);
     }
@@ -109,7 +111,7 @@ public class LicenceController {
     */
 
     @GetMapping(value = "/verificationParCle/{cleLicence}")
-    public ResponseLicence verificationLicenceParCle(@PathVariable String cleLicence) throws LicenceNonTrouverException, VerificationPaiementKeyException, LicenceNonCreerException 
+    public ResponseLicence verificationLicenceParCle(@PathVariable String cleLicence) throws LicenceNonTrouverException, VerificationPaiementKeyException, LicenceNonCreerException, NoSuchAlgorithmException 
     {
         var res = licenceService.verifierLicence(cleLicence);
         return res;
@@ -150,5 +152,9 @@ public class LicenceController {
         return ResponseEntity.ok(licenceService.rechercheParStatus(status));
     }*/
 
-   
+  @GetMapping(value = "/deleteAll")
+   public void supprimerAll()
+   {
+        licenceRepository.deleteAll();
+   }
 }
