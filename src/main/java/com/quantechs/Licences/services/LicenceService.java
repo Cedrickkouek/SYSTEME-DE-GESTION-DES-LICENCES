@@ -3,21 +3,13 @@ package com.quantechs.Licences.services;
 import java.io.StringReader;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-//import java.time.LocalDate;
-//import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-//import java.time.temporal.ChronoUnit;
 import java.util.List;
-//import java.util.UUID;
-//import java.util.UUID;
-
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-//import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-//import org.springframework.web.reactive.function.client.WebClient;
 
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
@@ -25,16 +17,11 @@ import com.google.gson.JsonObject;
 import com.quantechs.Licences.Utils.HashGenerator;
 import com.quantechs.Licences.Utils.StringToLocalDateConverter;
 import com.quantechs.Licences.entities.LeService;
-//import com.fasterxml.uuid.Generators;
 import com.quantechs.Licences.entities.Licence;
 import com.quantechs.Licences.entities.Projet;
 import com.quantechs.Licences.exceptions.ActivationLicencePaiementException;
 import com.quantechs.Licences.exceptions.EnumerationNotFoundException;
 import com.quantechs.Licences.exceptions.LicenceNonCreerException;
-//import com.quantechs.Licences.entities.Projet;
-//import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
-//import com.quantechs.Licences.exceptions.HttpMessageNotReadableExceptionn;
-//import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.exceptions.LicenceNonTrouverException;
 import com.quantechs.Licences.exceptions.PaiementNonEffectueException;
 import com.quantechs.Licences.exceptions.ProjetNonTrouverException;
@@ -46,29 +33,16 @@ import com.quantechs.Licences.payloads.in.InitialiserPaiement;
 import com.quantechs.Licences.payloads.out.ResponseLicence;
 import com.quantechs.Licences.payloads.out.paiementInfos;
 import com.quantechs.Licences.payloads.out.verificationLicenceOutput;
-//import com.quantechs.Licences.payloads.out.ResponseInitPayment;
-//import com.quantechs.Licences.payloads.in.CreerProjetPayload;
-//import com.quantechs.Licences.payloads.in.InitialiserPaiement;
-//import com.quantechs.Licences.payloads.out.ResponseInitPayment;
 import com.quantechs.Licences.repositories.LicenceRepository;
 import com.quantechs.Licences.repositories.ProjetRepository;
 import com.quantechs.Licences.repositories.ServiceRepository;
-
-//import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 
 import com.quantechs.Licences.enumeration.MoyenPaiement;
 import com.quantechs.Licences.enumeration.QCurrency;
 import com.quantechs.Licences.enumeration.StatusLicence;
 import com.quantechs.Licences.enumeration.StatusProjet;
-//import com.quantechs.Licences.enumeration.StatusProjet;
 import com.quantechs.Licences.enumeration.StatusService;
-//import org.springframework.http.MediaType;
-//import reactor.core.publisher.Mono;
-
-//import jakarta.annotation.Generated;
-//import jakarta.persistence.GeneratedValue;
-//import jakarta.persistence.GenerationType;
 
 @Service
 @AllArgsConstructor
@@ -389,18 +363,23 @@ public class LicenceService {
         }
     }
 
-    public List<Licence> rechercherParNumeroEtStatusActif(String idUtilisateur)
+    public List<Licence> rechercherParNumeroEtStatusActif(String idUtilisateur) throws LicenceNonTrouverException
     {
-        List<Licence> listTrier = new ArrayList<>();
-        var listLicenceParNumeroUser = licenceRepository.findAll(Sort.by(idUtilisateur));
-        for (Licence licence : listLicenceParNumeroUser) {
-            if(licence.getStatus() == StatusLicence.ACTIF)
+        var licences = licenceRepository.findAll();
+        List<Licence> lesLicences = new ArrayList<>();
+
+        for (Licence licence : licences) {
+            if(licence.getIdUtilisateur().equals(idUtilisateur))
             {
-                listTrier.add(licence);
+                lesLicences.add(licence);
             }
         }
-        return listTrier;
-        
+        //boolean isEmpty = lesLicences.size() == 0;
+
+        return lesLicences.stream()
+        .filter(licence -> licence.getStatus() == StatusLicence.ACTIF)
+        .collect(Collectors.toList()); 
+          
     }
 
     public Licence activerLicence(String idLicence) 
